@@ -26,8 +26,6 @@ class Event
 {
 public:
     EventType type;
-
-    void fillOrder(Order &order);
 };
 
 }
