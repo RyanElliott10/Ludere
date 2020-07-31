@@ -6,9 +6,28 @@
 #define LUDERE_ENGINE_HPP
 
 
-class Engine {
+#include <unordered_set>
 
+#include <ludere/Exchange.hpp>
+#include <ludere/Strategy.hpp>
+
+namespace lud {
+
+class Engine
+{
+public:
+    Engine(Exchange &, std::unordered_set<Strategy> &);
+
+    void beingTrading();
+
+private:
+
+private:
+    Exchange &m_exchange;
+    std::unordered_set<Strategy> &m_strategies;
 };
+
+}
 
 
 #endif //LUDERE_ENGINE_HPP
