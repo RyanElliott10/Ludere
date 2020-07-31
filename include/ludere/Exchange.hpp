@@ -17,7 +17,6 @@ class Exchange
 {
 public:
     Exchange();
-
     void beginTrading();
 
 private:

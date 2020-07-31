@@ -6,8 +6,16 @@
 #define LUDERE_EVENT_HPP
 
 
+#include <ludere/Order.hpp>
+
 namespace lud {
 
+/**
+ * kMarketEvent
+ *      A market-wide event. Market open/close, trading halt, etc.
+ * kFillEvent
+ *      A request to fill an Order
+ */
 enum class EventType : uint8_t
 {
     kMarketEvent = 0,
@@ -18,6 +26,8 @@ class Event
 {
 public:
     EventType type;
+
+    void fillOrder(Order &order);
 };
 
 }
