@@ -6,6 +6,11 @@
 #define LUDERE_EXCHANGE_HPP
 
 
+#include <vector>
+
+#include <ludere_private/Core.hpp>
+#include <ludere/CandlestickData.hpp>
+
 namespace lud {
 
 class Exchange
@@ -15,6 +20,10 @@ public:
 
     void beginTrading();
 
+private:
+    bool m_isTrading;
+    EventQueue m_eventQueue;
+    std::vector<CandlestickCandle> m_candlestickFeed;
 };
 
 }

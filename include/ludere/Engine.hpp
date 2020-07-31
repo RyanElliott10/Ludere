@@ -21,8 +21,7 @@ public:
     void beingTrading();
 
 private:
-
-private:
+    bool m_isTrading;
     Exchange &m_exchange;
     std::unordered_set<Strategy> &m_strategies;
 };

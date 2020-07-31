@@ -8,12 +8,26 @@ namespace lud {
 
 Exchange::Exchange()
 {
-
+    m_isTrading = false;
 }
 
 void Exchange::beginTrading()
 {
+    m_isTrading = true;
 
+    while (m_isTrading) {
+        while (m_eventQueue.size() > 0) {
+            Event &event = m_eventQueue.front();
+            switch (event.type) {
+            case EventType::kMarketEvent:
+                break;
+            case EventType::kFillEvent:
+                break;
+            }
+
+            m_eventQueue.pop();
+        }
+    }
 }
 
 }

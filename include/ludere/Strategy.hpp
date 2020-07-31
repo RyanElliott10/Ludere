@@ -5,6 +5,7 @@
 #ifndef LUDERE_STRATEGY_HPP
 #define LUDERE_STRATEGY_HPP
 
+
 namespace lud {
 
 class Strategy
@@ -16,5 +17,6 @@ public:
 };
 
 }
+
 
 #endif //LUDERE_STRATEGY_HPP

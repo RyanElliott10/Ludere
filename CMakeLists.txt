@@ -5,7 +5,7 @@ project(Ludere VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(Ludere src/core/Engine.cpp include/ludere/Strategy.hpp src/core/Exchange.cpp include/ludere/Exchange.hpp src/ludere_private/Log.hpp)
+add_library(Ludere src/core/Engine.cpp include/ludere/Strategy.hpp src/core/Exchange.cpp include/ludere/Exchange.hpp src/ludere_private/Log.hpp include/ludere/CandlestickData.hpp include/ludere/Event.hpp src/ludere_private/Core.hpp src/core/Portfolio.cpp include/ludere/Portfolio.hpp)
 
 target_include_directories(Ludere
         PUBLIC
