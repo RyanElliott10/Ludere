@@ -8,9 +8,9 @@
 
 #include <vector>
 
-#include <ludere_private/Core.hpp>
+#include <ludere/Core.hpp>
 #include <ludere/CandlestickData.hpp>
-#include <ludere_private/MarketEventSubscriber.hpp>
+#include <ludere/MarketEventSubscriber.hpp>
 
 namespace lud {
 

@@ -42,4 +42,5 @@ public:
 #define LD_WARN(fmt, ...) Log::warn_log(fmt, __VA_ARGS__)
 #define LD_ERROR(fmt, ...) Log::error_log(fmt, __VA_ARGS__)
 
+
 #endif //LUDERE_LOG_HPP

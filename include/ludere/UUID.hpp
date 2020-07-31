@@ -14,9 +14,7 @@ namespace lud {
 class UUID
 {
 public:
-    static std::unique_ptr<UUID> generateUUID() {
-        return std::unique_ptr<UUID>(new UUID());
-    }
+    static inline std::unique_ptr<UUID> generateUUID() { return std::unique_ptr<UUID>(new UUID()); }
 
 private:
     UUID() {
@@ -28,5 +26,6 @@ private:
 };
 
 }
+
 
 #endif //LUDERE_UUID_HPP

@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include <ludere_private/UUID.hpp>
+#include <ludere/UUID.hpp>
 
 namespace lud {
 

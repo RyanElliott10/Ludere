@@ -6,7 +6,7 @@
 #define LUDERE_STRATEGY_HPP
 
 
-#include <ludere_private/MarketEventSubscriber.hpp>
+#include <ludere/MarketEventSubscriber.hpp>
 
 namespace lud {
 

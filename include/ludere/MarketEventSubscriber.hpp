@@ -19,4 +19,5 @@ struct MarketEventSubscriber
 
 }
 
+
 #endif //LUDERE_MARKETEVENTSUBSCRIBER_HPP
