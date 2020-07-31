@@ -14,12 +14,11 @@ namespace lud {
 class UUID
 {
 public:
-    static inline std::unique_ptr<UUID> generateUUID() { return std::unique_ptr<UUID>(new UUID()); }
-
-private:
     UUID() {
         m_id = UUID::s_inc++;
     }
+
+private:
     uint64_t m_id;
 
     static inline uint64_t s_inc = 0;

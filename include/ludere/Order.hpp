@@ -23,14 +23,14 @@ struct MarketOrder
     float marketPrice;
     float funds;
 
-    bool isAcceptableTrade(float price) { return price <= marketPrice && price <= funds; }
+    bool isAcceptableTrade(float price) const { return price <= marketPrice && price <= funds; }
 };
 
 struct LimitOrder
 {
     float funds;
 
-    bool isAcceptableTrade(float price) { return price <= funds; }
+    bool isAcceptableTrade(float price) const { return price <= funds; }
 };
 
 class Order
@@ -40,7 +40,7 @@ public:
     OrderType orderType;
     MarketOrder &marketOrder;
     LimitOrder &limitOrder;
-    std::unique_ptr<UUID> id = UUID::generateUUID();
+    std::unique_ptr<UUID> id = std::make_unique<UUID>();
 };
 
 }

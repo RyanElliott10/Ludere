@@ -3,3 +3,7 @@
 //
 
 #include "ludere/FillEvent.hpp"
+
+namespace lud {
+
+}
