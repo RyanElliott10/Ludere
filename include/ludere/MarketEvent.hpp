@@ -23,7 +23,7 @@ enum class MarketEventType : uint8_t
 class MarketEvent : public Event
 {
 public:
-    Order &order;
+    MarketEventType marketEventType;
 };
 
 }

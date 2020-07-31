@@ -3,3 +3,7 @@
 //
 
 #include "ludere/MarketEvent.hpp"
+
+namespace lud {
+
+}

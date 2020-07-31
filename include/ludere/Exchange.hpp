@@ -10,6 +10,7 @@
 
 #include <ludere_private/Core.hpp>
 #include <ludere/CandlestickData.hpp>
+#include <ludere_private/MarketEventSubscriber.hpp>
 
 namespace lud {
 
@@ -23,6 +24,7 @@ private:
     bool m_isTrading;
     EventQueue m_eventQueue;
     std::vector<CandlestickCandle> m_candlestickFeed;
+    std::vector<std::unique_ptr<MarketEventSubscriber>> m_marketEventSubscribers;
 };
 
 }

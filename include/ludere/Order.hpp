@@ -6,11 +6,41 @@
 #define LUDERE_ORDER_HPP
 
 
+#include <string>
+
+#include <ludere_private/UUID.hpp>
+
 namespace lud {
+
+enum class OrderType
+{
+    kMarket = 0,
+    kLimit
+};
+
+struct MarketOrder
+{
+    float marketPrice;
+    float funds;
+
+    bool isAcceptableTrade(float price) { return price <= marketPrice && price <= funds; }
+};
+
+struct LimitOrder
+{
+    float funds;
+
+    bool isAcceptableTrade(float price) { return price <= funds; }
+};
 
 class Order
 {
-
+public:
+    std::string security;
+    OrderType orderType;
+    MarketOrder &marketOrder;
+    LimitOrder &limitOrder;
+    std::unique_ptr<UUID> id = UUID::generateUUID();
 };
 
 }

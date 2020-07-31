@@ -6,14 +6,17 @@
 #define LUDERE_STRATEGY_HPP
 
 
+#include <ludere_private/MarketEventSubscriber.hpp>
+
 namespace lud {
 
-class Strategy
+class Strategy : virtual public MarketEventSubscriber
 {
 public:
     Strategy();
 
     void beingTrading();
+    virtual void notifyOfMarketEvent(MarketEvent &event);
 };
 
 }

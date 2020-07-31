@@ -15,17 +15,31 @@ Exchange::Exchange()
 void Exchange::beginTrading()
 {
     m_isTrading = true;
-
+    /**
+     * TODO: Figure out the remaining events that the Exchange should be in control of
+     * Although, I suppose the Exchange should be in control of all the events in the market; that's the point of
+     *  an exchange. The Portfolio, and the Strategies derived from it, simply send events to the Exchange. That being
+     *  said, we need to figure out the other types of events our system will handle.
+     *
+     * MarketEvent
+     * FillEvent
+     * SignalEvent -- I'm not too sure what this event represents; it seems like something relevant to Strategy (read
+     *  algorithms) and shouldn't be something in the Exchange?
+     */
     while (m_isTrading) {
         while (m_eventQueue.size() > 0) {
             Event &event = m_eventQueue.front();
             switch (event.type) {
             case EventType::kMarketEvent: {
-                MarketEvent &strict_event = (MarketEvent &) event;
+                MarketEvent &strictEvent = (MarketEvent &) event;
+                for (auto i = std::next(m_marketEventSubscribers.begin()); i != m_marketEventSubscribers.end(); i++) {
+                    (*i)->notifyOfMarketEvent(strictEvent);
+                }
                 break;
             }
             case EventType::kFillEvent: {
-                FillEvent &strict_event = (FillEvent &) event;
+                FillEvent &strictEvent = (FillEvent &) event;
+                // ... fill the order
                 break;
             }
             }
