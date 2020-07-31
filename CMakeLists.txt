@@ -1,5 +1,3 @@
-#https://pabloariasal.github.io/2018/02/19/its-time-to-do-cmake-right/
-
 cmake_minimum_required(VERSION 3.17)
 project(Ludere VERSION 1.0.0 LANGUAGES CXX)
 
@@ -18,10 +16,3 @@ target_include_directories(Ludere
 
 target_compile_options(Ludere PRIVATE -Werror)
 target_compile_features(Ludere PRIVATE cxx_std_20)
-
-#find_package(Boost REQUIRED COMPONENTS optional)
-#
-#target_link_libraries(Ludere
-#        PUBLIC:
-#            Boost::optional
-#)

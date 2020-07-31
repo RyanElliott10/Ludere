@@ -16,7 +16,7 @@ public:
     Strategy();
 
     void beingTrading();
-    void notifyOfMarketEvent(MarketEvent &event) override = 0;
+    virtual void notifyOfMarketEvent(MarketEvent &event);
 };
 
 }
