@@ -13,10 +13,17 @@ namespace lud {
 class Strategy : virtual public MarketEventSubscriber
 {
 public:
-    Strategy();
+    Strategy() {
+        m_isTrading = false;
+    }
 
-    void beingTrading();
-    virtual void notifyOfMarketEvent(MarketEvent &event);
+    virtual void beginTrading() {
+        m_isTrading = true;
+    };
+    virtual void notifyOfMarketEvent(MarketEvent &event) = 0;
+
+private:
+    bool m_isTrading;
 };
 
 }

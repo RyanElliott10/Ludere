@@ -7,7 +7,7 @@
 
 namespace lud {
 
-Engine::Engine(Exchange &exchange, std::unordered_set<Strategy> &strategies)
+Engine::Engine(Exchange &exchange, std::unordered_set<std::unique_ptr<Strategy>> &strategies)
         : m_exchange(exchange), m_strategies(strategies)
 {
     LD_DEBUG("Creating instance of lud::Engine", nullptr);
@@ -18,8 +18,8 @@ void Engine::beingTrading()
 {
     m_isTrading = true;
     m_exchange.beginTrading();
-    for (Strategy strategy : m_strategies) {
-        strategy.beingTrading();
+    for (auto i = m_strategies.begin(); i != m_strategies.end(); i++) {
+        (*i)->beginTrading();
     }
 }
 

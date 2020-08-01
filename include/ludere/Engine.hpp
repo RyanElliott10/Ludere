@@ -16,14 +16,14 @@ namespace lud {
 class Engine
 {
 public:
-    Engine(Exchange &, std::unordered_set<Strategy> &);
+    Engine(Exchange &, std::unordered_set<std::unique_ptr<Strategy>> &);
 
     void beingTrading();
 
 private:
     bool m_isTrading;
     Exchange &m_exchange;
-    std::unordered_set<Strategy> &m_strategies;
+    std::unordered_set<std::unique_ptr<Strategy>> &m_strategies;
 };
 
 }
