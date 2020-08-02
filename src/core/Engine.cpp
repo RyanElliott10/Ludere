@@ -7,14 +7,14 @@
 
 namespace lud {
 
-Engine::Engine(Exchange &exchange, std::unordered_set<std::unique_ptr<Strategy>> &strategies)
+Engine::Engine(Exchange &exchange, std::unordered_set<std::unique_ptr<AbstractStrategy>> &strategies)
         : m_exchange(exchange), m_strategies(strategies)
 {
     LD_DEBUG("Creating instance of lud::Engine", nullptr);
     m_isTrading = false;
 }
 
-void Engine::beingTrading()
+void Engine::trade()
 {
     m_isTrading = true;
     m_exchange.beginTrading();

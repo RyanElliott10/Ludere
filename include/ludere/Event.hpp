@@ -13,7 +13,8 @@ namespace lud {
 enum class EventType : uint8_t
 {
     kMarketEvent = 0, // A market-wide event. Market open/close, trading halt, etc.
-    kFillEvent // A request to fill an Order
+    kFillEvent, // A request to fill an Order
+    kDataRequestEvent, // A request from a AbstractStrategy for data
 };
 
 class Event

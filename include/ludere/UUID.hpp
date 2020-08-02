@@ -14,7 +14,8 @@ namespace lud {
 class UUID
 {
 public:
-    UUID() {
+    UUID()
+    {
         m_id = UUID::s_inc++;
     }
 

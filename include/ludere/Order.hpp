@@ -23,14 +23,20 @@ struct MarketOrder
     float marketPrice;
     float funds;
 
-    bool isAcceptableTrade(float price) const { return price <= marketPrice && price <= funds; }
+    inline bool isAcceptableTrade(float price) const
+    {
+        return price <= marketPrice && price <= funds;
+    }
 };
 
 struct LimitOrder
 {
     float funds;
 
-    bool isAcceptableTrade(float price) const { return price <= funds; }
+    inline bool isAcceptableTrade(float price) const
+    {
+        return price <= funds;
+    }
 };
 
 class Order

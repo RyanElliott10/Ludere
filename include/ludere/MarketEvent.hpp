@@ -6,10 +6,9 @@
 #define LUDERE_MARKETEVENT_HPP
 
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <ludere/Event.hpp>
-#include <ludere/Order.hpp>
 
 namespace lud {
 
@@ -20,10 +19,14 @@ enum class MarketEventType : uint8_t
     kMarketHalt
 };
 
-class MarketEvent : Event
+class MarketEvent : public Event
 {
 public:
-    MarketEvent();
+    MarketEvent(MarketEventType _mtype)
+            : marketEventType(_mtype)
+    {
+        type = EventType::kMarketEvent;
+    }
 
 public:
     MarketEventType marketEventType;

@@ -6,14 +6,14 @@
 #define LUDERE_MARKETEVENTSUBSCRIBER_HPP
 
 
-#include <ludere/Events.hpp>
+#include <ludere/MarketEvent.hpp>
 
 namespace lud {
 
-// A pure interface for classes to implement to be notified of MarketEvents
-struct MarketEventSubscriber
+struct IMarketEventSubscriber
 {
-    virtual ~MarketEventSubscriber() = default;
+    virtual ~IMarketEventSubscriber() = default;
+
     virtual void notifyOfMarketEvent(MarketEvent &marketEvent) = 0;
 };
 

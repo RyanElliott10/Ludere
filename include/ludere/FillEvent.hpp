@@ -11,10 +11,14 @@
 
 namespace lud {
 
-class FillEvent : Event
+class FillEvent : public Event
 {
 public:
-    FillEvent();
+    FillEvent(Order &_order)
+            : order(_order)
+    {
+        type = EventType::kFillEvent;
+    }
 
 public:
     Order &order;

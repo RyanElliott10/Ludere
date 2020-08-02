@@ -5,9 +5,10 @@
 #ifndef LUDERE_CANDLESTICKDATA_HPP
 #define LUDERE_CANDLESTICKDATA_HPP
 
-#include <iostream>
 #include <charconv>
-#include <stdint.h>
+#include <cstdint>
+#include <iostream>
+#include <vector>
 
 #include <ludere/Log.hpp>
 
@@ -29,10 +30,6 @@ enum class CandlestickDataCSVHeaders
     kVolume = 5
 };
 
-/**
- * The eventual plan is to turn this into an iterable. The user is able to pass in a file with the below fields and that
- *  file is then treated as a data stream. Modeled after CSV.hpp
- */
 class CandlestickData
 {
 public:
@@ -42,7 +39,7 @@ public:
     float close;
     uint32_t volume;
 
-//    float timestamp;
+    // TODO: Add support for converting string timestamps into time_t (UNIX)
     std::string timestamp;
 
     std::string_view operator[](std::size_t index) const
@@ -74,7 +71,7 @@ public:
             std::string tmp = m_line.substr(m_data[i] + 1, m_data[i + 1] - (m_data[i] + 1));
             // Detect header rows
             if (i > 0 && !isNumber(tmp)) {
-                LD_WARN("Error parsing CSV row: %s", tmp.c_str());
+                LD_WARN("Error parsing CSV row (potentially header. If so, disregard this message): %s", tmp.c_str());
                 return CSVRowSuccessReturnCode::kFailure;
             }
 
@@ -119,11 +116,16 @@ private:
     }
 };
 
+inline std::ostream &operator<<(std::ostream &strm, const CandlestickData &candle)
+{
+    return strm << candle.timestamp << " " << candle.open << " " << candle.high << " " << candle.low << " "
+                << candle.close << " " << candle.volume;
+}
+
 inline std::istream &operator>>(std::istream &str, CandlestickData &candle)
 {
-    auto success = candle.readNextRow(str);
-    if (success == CSVRowSuccessReturnCode::kFailure) {
-        // If there was an error parsing that row, skip and stream the next row
+    auto status = candle.readNextRow(str);
+    if (status == CSVRowSuccessReturnCode::kFailure) {
         str >> candle;
     }
     return str;

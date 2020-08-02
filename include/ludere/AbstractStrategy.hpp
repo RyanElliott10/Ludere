@@ -6,24 +6,25 @@
 #define LUDERE_STRATEGY_HPP
 
 
-#include <ludere/MarketEventSubscriber.hpp>
+#include <ludere/IMarketEventSubscriber.hpp>
+#include <ludere/CandlestickData.hpp>
 
 namespace lud {
 
-class Strategy : MarketEventSubscriber
+class AbstractStrategy : IMarketEventSubscriber
 {
 public:
-    Strategy() {
-        m_isTrading = false;
-    }
-
-    virtual void beginTrading() {
+    virtual void beginTrading()
+    {
         m_isTrading = true;
     };
+
     virtual void notifyOfMarketEvent(MarketEvent &event) = 0;
 
+    virtual void handleMarketData(CandlestickData &data) = 0;
+
 private:
-    bool m_isTrading;
+    bool m_isTrading = false;
 };
 
 }

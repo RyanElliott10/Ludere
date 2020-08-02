@@ -17,10 +17,10 @@ public:
 
 private:
     Exchange &m_exchange;
-    float m_portfolioValue{};
-    float m_liquidCash{};
-    int m_numTrades{};
-    // std::vector<History> &m_history;
+    float m_portfolioValue;
+    float m_liquidCash;
+    int m_numTrades;
+    // TODO: Add history ivar
 };
 
 }

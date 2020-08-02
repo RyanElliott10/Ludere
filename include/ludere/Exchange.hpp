@@ -9,22 +9,23 @@
 #include <vector>
 
 #include <ludere/Core.hpp>
-#include <ludere/CandlestickData.hpp>
-#include <ludere/MarketEventSubscriber.hpp>
+#include <ludere/IMarketEventSubscriber.hpp>
 
 namespace lud {
 
 class Exchange
 {
 public:
-    Exchange();
+    Exchange(const std::string &dataFilename);
+    Exchange(const std::string &dataFilename, const bool invertedDatastream);
     void beginTrading();
 
 private:
     bool m_isTrading;
     EventQueue m_eventQueue;
-    std::vector<CandlestickData> m_candlestickFeed;
-    std::vector<std::unique_ptr<MarketEventSubscriber>> m_marketEventSubscribers;
+    std::vector<std::unique_ptr<IMarketEventSubscriber>> m_marketEventSubscribers;
+    const std::string &m_dataFilename;
+    const bool m_invertedDatastream = false;
 };
 
 }

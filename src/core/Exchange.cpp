@@ -2,14 +2,31 @@
 // Created by Ryan Elliott on 7/30/20.
 //
 
+#include <iostream>
+#include <fstream>
+
+#include <ludere/CandlestickData.hpp>
+#include <ludere/DataRequestEvent.hpp>
 #include <ludere/Exchange.hpp>
-#include <ludere/Events.hpp>
+#include <ludere/FillEvent.hpp>
+
 
 namespace lud {
 
-Exchange::Exchange()
+Exchange::Exchange(const std::string &dataFilename)
+        : m_dataFilename(dataFilename)
 {
     m_isTrading = false;
+}
+
+Exchange::Exchange(const std::string &dataFilename, const bool invertedDatastream)
+        : m_dataFilename(dataFilename), m_invertedDatastream(invertedDatastream)
+{
+    m_isTrading = false;
+    if (m_invertedDatastream) {
+        LD_ERROR("Inverted datastream is not yet supported", nullptr);
+        exit(-1);
+    }
 }
 
 void Exchange::beginTrading()
@@ -23,10 +40,15 @@ void Exchange::beginTrading()
      *
      * MarketEvent
      * FillEvent
-     * SignalEvent -- I'm not too sure what this event represents; it seems like something relevant to Strategy (read
+     * SignalEvent -- I'm not too sure what this event represents; it seems like something relevant to AbstractStrategy (read
      *  algorithms) and shouldn't be something in the Exchange?
      */
-    while (m_isTrading) {
+
+    std::ifstream file(m_dataFilename);
+    lud::CandlestickData candle;
+    while (file >> candle) {
+        std::cout << candle << std::endl;
+
         while (!m_eventQueue.empty()) {
             Event &event = m_eventQueue.front();
             switch (event.type) {
@@ -40,6 +62,11 @@ void Exchange::beginTrading()
             case EventType::kFillEvent: {
                 auto &strictEvent = (FillEvent &) event;
                 // ... fill the order
+                break;
+            }
+            case EventType::kDataRequestEvent: {
+                auto &strictEvent = (DataRequestEvent &)event;
+                strictEvent.strategy.handleMarketData(candle);
                 break;
             }
             }

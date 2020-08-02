@@ -2,7 +2,7 @@
 // Created by Ryan Elliott on 7/30/20.
 //
 
-#include "ludere/Portfolio.hpp"
+#include <ludere/Portfolio.hpp>
 
 namespace lud {
 

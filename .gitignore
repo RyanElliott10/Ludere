@@ -1,6 +1,7 @@
 # IDE-specific
 .idea/
 build/
+*.dot
 
 # Prerequisites
 *.d

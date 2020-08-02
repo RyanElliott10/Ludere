@@ -9,6 +9,7 @@
 #include <ludere/Event.hpp>
 #include <ludere/MarketEvent.hpp>
 #include <ludere/FillEvent.hpp>
+#include <ludere/DataRequestEvent.hpp>
 
 
 #endif //LUDERE_EVENTS_HPP
