@@ -11,8 +11,11 @@
 
 namespace lud {
 
-class FillEvent : public Event
+class FillEvent : Event
 {
+public:
+    FillEvent();
+
 public:
     Order &order;
 };

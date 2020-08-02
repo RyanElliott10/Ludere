@@ -10,7 +10,7 @@
 
 namespace lud {
 
-class Strategy : virtual public MarketEventSubscriber
+class Strategy : MarketEventSubscriber
 {
 public:
     Strategy() {

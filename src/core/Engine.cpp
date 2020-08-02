@@ -3,7 +3,7 @@
 //
 
 #include <ludere/Engine.hpp>
-#include <ludere_private/Log.hpp>
+#include <ludere/Log.hpp>
 
 namespace lud {
 
@@ -18,8 +18,8 @@ void Engine::beingTrading()
 {
     m_isTrading = true;
     m_exchange.beginTrading();
-    for (auto i = m_strategies.begin(); i != m_strategies.end(); i++) {
-        (*i)->beginTrading();
+    for (const auto & m_strategy : m_strategies) {
+        m_strategy->beginTrading();
     }
 }
 

@@ -13,13 +13,13 @@ namespace lud {
 class Portfolio
 {
 public:
-    Portfolio(Exchange &exchange);
+    Portfolio(Exchange &exchange, float value, float cash);
 
 private:
     Exchange &m_exchange;
-    float m_portfolioValue;
-    float m_liquidCash;
-    int m_numTrades;
+    float m_portfolioValue{};
+    float m_liquidCash{};
+    int m_numTrades{};
     // std::vector<History> &m_history;
 };
 

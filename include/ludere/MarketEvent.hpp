@@ -20,8 +20,11 @@ enum class MarketEventType : uint8_t
     kMarketHalt
 };
 
-class MarketEvent : public Event
+class MarketEvent : Event
 {
+public:
+    MarketEvent();
+
 public:
     MarketEventType marketEventType;
 };

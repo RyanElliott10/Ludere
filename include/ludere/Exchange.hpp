@@ -23,7 +23,7 @@ public:
 private:
     bool m_isTrading;
     EventQueue m_eventQueue;
-    std::vector<CandlestickCandle> m_candlestickFeed;
+    std::vector<CandlestickData> m_candlestickFeed;
     std::vector<std::unique_ptr<MarketEventSubscriber>> m_marketEventSubscribers;
 };
 

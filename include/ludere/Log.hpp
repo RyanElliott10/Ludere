@@ -18,21 +18,21 @@ public:
     {
         va_list args;
         va_start(args, fmt);
-        printf("%s", fmt);
+        printf("\033[0;32mLudere Debug:\033[0m %s\n", fmt);
     }
 
     static inline void warn_log(const char *fmt, ...)
     {
         va_list args;
         va_start(args, fmt);
-        printf("%s", fmt);
+        printf("\033[0;33mLudere Warning:\033[0m %s\n", fmt);
     }
 
     static inline void error_log(const char *fmt, ...)
     {
         va_list args;
         va_start(args, fmt);
-        printf("%s", fmt);
+        printf("\033[0;31mLudere Error:\033[0m %s\n", fmt);
     }
 };
 

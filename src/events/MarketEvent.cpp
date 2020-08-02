@@ -6,4 +6,9 @@
 
 namespace lud {
 
+MarketEvent::MarketEvent()
+{
+
+}
+
 }

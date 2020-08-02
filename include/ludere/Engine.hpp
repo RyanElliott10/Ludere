@@ -17,7 +17,6 @@ class Engine
 {
 public:
     Engine(Exchange &, std::unordered_set<std::unique_ptr<Strategy>> &);
-
     void beingTrading();
 
 private:

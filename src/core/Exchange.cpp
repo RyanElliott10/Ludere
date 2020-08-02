@@ -27,18 +27,18 @@ void Exchange::beginTrading()
      *  algorithms) and shouldn't be something in the Exchange?
      */
     while (m_isTrading) {
-        while (m_eventQueue.size() > 0) {
+        while (!m_eventQueue.empty()) {
             Event &event = m_eventQueue.front();
             switch (event.type) {
             case EventType::kMarketEvent: {
-                MarketEvent &strictEvent = (MarketEvent &) event;
+                auto &strictEvent = (MarketEvent &) event;
                 for (auto i = std::next(m_marketEventSubscribers.begin()); i != m_marketEventSubscribers.end(); i++) {
                     (*i)->notifyOfMarketEvent(strictEvent);
                 }
                 break;
             }
             case EventType::kFillEvent: {
-                FillEvent &strictEvent = (FillEvent &) event;
+                auto &strictEvent = (FillEvent &) event;
                 // ... fill the order
                 break;
             }
