@@ -6,21 +6,27 @@
 #define SUCCESSOR_DATAREQUESTEVENT_HPP
 
 
+#include <ludere/CandlestickData.hpp>
 #include <ludere/Event.hpp>
-#include <ludere/AbstractStrategy.hpp>
+#include <utility>
 
 namespace lud {
 
+/**
+ * TODO: There is a circular dependency issue as this stands. AbstractStrategy requires DataRequestEvent, and
+ *  DataRequestEvent requires AbstractStrategy. Simply remove the reference to a strategy in favor of a function
+ *  (std::function)
+ */
 class DataRequestEvent : public Event
 {
 public:
-    explicit DataRequestEvent(AbstractStrategy &_strategy)
-            : strategy(_strategy)
+    explicit DataRequestEvent(std::function<void(CandlestickData & )> _callback)
+            : callback(std::move(_callback))
     {
         type = EventType::kDataRequestEvent;
     }
 
-    AbstractStrategy &strategy;
+    std::function<void(CandlestickData & )> callback;
 };
 
 }

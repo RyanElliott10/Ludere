@@ -15,6 +15,9 @@ class Portfolio
 public:
     Portfolio(Exchange &exchange, float value, float cash);
 
+public:
+    friend class AbstractStrategy;
+
 private:
     Exchange &m_exchange;
     float m_portfolioValue;

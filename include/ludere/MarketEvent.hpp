@@ -22,7 +22,7 @@ enum class MarketEventType : uint8_t
 class MarketEvent : public Event
 {
 public:
-    MarketEvent(MarketEventType _mtype)
+    explicit MarketEvent(MarketEventType _mtype)
             : marketEventType(_mtype)
     {
         type = EventType::kMarketEvent;

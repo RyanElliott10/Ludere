@@ -11,7 +11,7 @@
 #include <ludere/Event.hpp>
 
 // TODO: Reconsider this design pattern. Perhaps EventQueue should be a class all on its own
-#define EventQueue std::queue<Event>
+#define EventQueue std::queue<std::unique_ptr<Event>>
 
 
 #endif //LUDERE_CORE_HPP

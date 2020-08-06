@@ -20,6 +20,7 @@ enum class EventType : uint8_t
 class Event
 {
 public:
+    virtual ~Event() = default;
     EventType type;
 };
 

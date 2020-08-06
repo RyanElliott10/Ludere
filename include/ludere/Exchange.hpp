@@ -17,8 +17,12 @@ class Exchange
 {
 public:
     Exchange(const std::string &dataFilename);
+
     Exchange(const std::string &dataFilename, const bool invertedDatastream);
-    void beginTrading();
+
+    void trade();
+
+    void addEvent(std::unique_ptr<Event> event);
 
 private:
     bool m_isTrading;

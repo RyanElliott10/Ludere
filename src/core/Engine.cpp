@@ -17,10 +17,10 @@ Engine::Engine(Exchange &exchange, std::unordered_set<std::unique_ptr<AbstractSt
 void Engine::trade()
 {
     m_isTrading = true;
-    m_exchange.beginTrading();
     for (const auto & m_strategy : m_strategies) {
-        m_strategy->beginTrading();
+        m_strategy->trade();
     }
+    m_exchange.trade();
 }
 
 }

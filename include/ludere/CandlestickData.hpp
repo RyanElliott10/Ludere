@@ -122,13 +122,13 @@ inline std::ostream &operator<<(std::ostream &strm, const CandlestickData &candl
                 << candle.close << " " << candle.volume;
 }
 
-inline std::istream &operator>>(std::istream &str, CandlestickData &candle)
+inline std::istream &operator>>(std::istream &strm, CandlestickData &candle)
 {
-    auto status = candle.readNextRow(str);
+    auto status = candle.readNextRow(strm);
     if (status == CSVRowSuccessReturnCode::kFailure) {
-        str >> candle;
+        strm >> candle;
     }
-    return str;
+    return strm;
 }
 
 }

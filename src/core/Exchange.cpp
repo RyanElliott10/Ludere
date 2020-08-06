@@ -29,7 +29,7 @@ Exchange::Exchange(const std::string &dataFilename, const bool invertedDatastrea
     }
 }
 
-void Exchange::beginTrading()
+void Exchange::trade()
 {
     m_isTrading = true;
     /**
@@ -40,6 +40,7 @@ void Exchange::beginTrading()
      *
      * MarketEvent
      * FillEvent
+     * DataRequestEvent -- When a Strategy requests data, we return the candle
      * SignalEvent -- I'm not too sure what this event represents; it seems like something relevant to AbstractStrategy (read
      *  algorithms) and shouldn't be something in the Exchange?
      */
@@ -50,23 +51,23 @@ void Exchange::beginTrading()
         std::cout << candle << std::endl;
 
         while (!m_eventQueue.empty()) {
-            Event &event = m_eventQueue.front();
-            switch (event.type) {
+            std::unique_ptr<Event> event = std::move(m_eventQueue.front());
+            switch (event->type) {
             case EventType::kMarketEvent: {
-                auto &strictEvent = (MarketEvent &) event;
+                auto &strictEvent = dynamic_cast<MarketEvent &>(*event);
                 for (auto i = std::next(m_marketEventSubscribers.begin()); i != m_marketEventSubscribers.end(); i++) {
                     (*i)->notifyOfMarketEvent(strictEvent);
                 }
                 break;
             }
             case EventType::kFillEvent: {
-                auto &strictEvent = (FillEvent &) event;
+                auto &strictEvent = dynamic_cast<FillEvent &>(*event);
                 // ... fill the order
                 break;
             }
             case EventType::kDataRequestEvent: {
-                auto &strictEvent = (DataRequestEvent &)event;
-                strictEvent.strategy.handleMarketData(candle);
+                auto &strictEvent = dynamic_cast<DataRequestEvent &>(*event);
+                strictEvent.callback(candle);
                 break;
             }
             }
@@ -74,6 +75,11 @@ void Exchange::beginTrading()
             m_eventQueue.pop();
         }
     }
+}
+
+void Exchange::addEvent(std::unique_ptr<Event> event)
+{
+    m_eventQueue.push(std::move(event));
 }
 
 }
