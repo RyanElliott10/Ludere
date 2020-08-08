@@ -1,5 +1,6 @@
 # IDE-specific
-.idea/
+**/.idea/workspace.xml
+**/.idea/tasks.xml
 build/
 *.dot
 

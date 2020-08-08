@@ -7,16 +7,16 @@
 
 
 #include <ludere/CandlestickData.hpp>
-#include <ludere/DataRequestEvent.hpp>
+#include <ludere/IDataEventSubscriber.hpp>
 #include <ludere/IMarketEventSubscriber.hpp>
 #include <ludere/Portfolio.hpp>
 
 namespace lud {
 
-class AbstractStrategy : IMarketEventSubscriber
+class AbstractStrategy : public IMarketEventSubscriber, public IDataEventSubscriber
 {
 public:
-    AbstractStrategy(Portfolio &portfolio)
+    explicit AbstractStrategy(Portfolio &portfolio)
             : m_portfolio(portfolio)
     {}
 
@@ -27,27 +27,9 @@ public:
     virtual void trade()
     {
         m_isTrading = true;
-
-        if (m_keepDataCurrent) {
-            requestCandlestickData();
-        }
     };
 
-    virtual void notifyOfMarketEvent(lud::MarketEvent &event) = 0;
-
-    virtual void handleMarketData(lud::CandlestickData &data)
-    {
-        if (m_keepDataCurrent) {
-            requestCandlestickData();
-        }
-    }
-
-    virtual void requestCandlestickData()
-    {
-        std::unique_ptr<Event> event = std::make_unique<DataRequestEvent>(
-                std::bind(&AbstractStrategy::handleMarketData, this, std::placeholders::_1));
-        m_portfolio.m_exchange.addEvent(std::move(event));
-    }
+    virtual void prepareToTrade() = 0;
 
 protected:
     bool m_isTrading = false;

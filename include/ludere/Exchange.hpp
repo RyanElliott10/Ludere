@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <ludere/Core.hpp>
+#include <ludere/IDataEventSubscriber.hpp>
 #include <ludere/IMarketEventSubscriber.hpp>
 
 namespace lud {
@@ -16,20 +17,22 @@ namespace lud {
 class Exchange
 {
 public:
-    Exchange(const std::string &dataFilename);
-
-    Exchange(const std::string &dataFilename, const bool invertedDatastream);
+    explicit Exchange(const std::string &dataFilename);
+    Exchange(const std::string &dataFilename, bool invertedDataStream);
 
     void trade();
-
-    void addEvent(std::unique_ptr<Event> event);
+    void addEvent(std::shared_ptr<Event> event);
+    void subscribeToDataStream(const std::shared_ptr<IDataEventSubscriber>& subscriber);
 
 private:
     bool m_isTrading;
     EventQueue m_eventQueue;
-    std::vector<std::unique_ptr<IMarketEventSubscriber>> m_marketEventSubscribers;
     const std::string &m_dataFilename;
-    const bool m_invertedDatastream = false;
+    const bool m_invertedDataStream = false;
+
+    // Subscribers
+    std::vector<const std::shared_ptr<IDataEventSubscriber>> m_dataEventSubscribers;
+    std::vector<const std::shared_ptr<IMarketEventSubscriber>> m_marketEventSubscribers;
 };
 
 }
