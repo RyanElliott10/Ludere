@@ -19,7 +19,6 @@ enum class EventType : uint8_t
 class Event
 {
 public:
-    Event() = delete;
     virtual ~Event() = default;
     EventType type;
 };
