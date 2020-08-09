@@ -9,6 +9,7 @@
 #include <ludere/CandlestickData.hpp>
 #include <ludere/IDataEventSubscriber.hpp>
 #include <ludere/IMarketEventSubscriber.hpp>
+#include <ludere/Order.hpp>
 #include <ludere/Portfolio.hpp>
 
 namespace lud {
@@ -30,6 +31,13 @@ public:
     };
 
     virtual void prepareToTrade() = 0;
+
+    virtual void
+    placeLimitOrder(std::string &security, uint32_t numShares, Order::PositionType positionType, float limitPrice)
+    {
+        std::shared_ptr<Order> order = std::make_shared<LimitOrder>(security, numShares, positionType, limitPrice);
+        m_portfolio.placeOrder(order);
+    }
 
 protected:
     bool m_isTrading = false;

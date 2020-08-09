@@ -3,7 +3,7 @@ project(Ludere VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(Ludere src/core/Engine.cpp include/ludere/AbstractStrategy.hpp src/core/Exchange.cpp include/ludere/Exchange.hpp include/ludere/Log.hpp include/ludere/CandlestickData.hpp include/ludere/Event.hpp include/ludere/Core.hpp src/core/Portfolio.cpp include/ludere/Portfolio.hpp include/ludere/Order.hpp include/ludere/MarketEvent.hpp include/ludere/FillEvent.hpp include/ludere/Events.hpp include/ludere/IMarketEventSubscriber.hpp include/ludere/UUID.hpp include/ludere/CSV.hpp include/ludere/IDataEventSubscriber.hpp)
+add_library(Ludere src/core/Engine.cpp include/ludere/AbstractStrategy.hpp src/core/Exchange.cpp include/ludere/Exchange.hpp include/ludere/Log.hpp include/ludere/CandlestickData.hpp include/ludere/Event.hpp include/ludere/Core.hpp src/core/Portfolio.cpp include/ludere/Portfolio.hpp include/ludere/Order.hpp include/ludere/MarketEvent.hpp include/ludere/FillEvent.hpp include/ludere/Events.hpp include/ludere/IMarketEventSubscriber.hpp include/ludere/UUID.hpp include/ludere/CSV.hpp include/ludere/IDataEventSubscriber.hpp include/ludere/Position.hpp include/ludere/FilledOrder.hpp)
 
 target_include_directories(Ludere
         PUBLIC

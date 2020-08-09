@@ -21,8 +21,10 @@ public:
     Exchange(const std::string &dataFilename, bool invertedDataStream);
 
     void trade();
-    void addEvent(std::shared_ptr<Event> event);
-    void subscribeToDataStream(const std::shared_ptr<IDataEventSubscriber>& subscriber);
+    void handleFillEvent(std::shared_ptr<Event> &event);
+    void handleMarketEvent(std::shared_ptr<Event> &event);
+    void addEvent(std::shared_ptr<Event> &event);
+    void subscribeToDataStream(const std::shared_ptr<IDataEventSubscriber> &subscriber);
 
 private:
     bool m_isTrading;

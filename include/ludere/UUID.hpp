@@ -14,10 +14,10 @@ namespace lud {
 class UUID
 {
 public:
-    UUID()
-    {
-        m_id = UUID::s_inc++;
-    }
+    UUID() : m_id(UUID::s_inc++)
+    {}
+
+    ~UUID() = default;
 
 private:
     uint64_t m_id;

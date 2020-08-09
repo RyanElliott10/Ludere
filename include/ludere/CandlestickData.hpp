@@ -33,6 +33,7 @@ enum class CandlestickDataCSVHeaders
 class CandlestickData
 {
 public:
+    std::string ticker = "AAPL";
     float open;
     float high;
     float low;

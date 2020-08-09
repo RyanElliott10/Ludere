@@ -9,7 +9,6 @@
 #include <cstdarg>
 #include <cstdio>
 
-// Xcode doesn't work well with ANSI color-coded output
 #define MAGENTA_ANSI_CODE "\033[01;35m"
 #define YELLOW_ANSI_CODE "\033[01;33m"
 #define RED_ANSI_CODE "\033[01;31m"
