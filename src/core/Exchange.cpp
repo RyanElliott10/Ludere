@@ -60,7 +60,11 @@ void Exchange::handleFillEvent(std::shared_ptr<Event> &event)
     if (fillEvent.verifyPortfolioFunds(fillEvent.order->maxOrderCost())) {
         std::shared_ptr<Order> order = fillEvent.order;
         FilledOrder filledOrder(order->security, order->numShares, order->maxOrderCost() / order->numShares,
-                                FilledOrder::FilledOrderStatus::kSuccess);
+                                FilledOrder::FilledOrderStatus::kSuccess, fillEvent.order->uuid);
+        fillEvent.callback(filledOrder);
+    } else {
+        FilledOrder filledOrder = FilledOrder::generateFailureFilledOrder(
+                FilledOrder::FilledOrderStatus::kInsufficientFunds, fillEvent.order->uuid);
         fillEvent.callback(filledOrder);
     }
 }

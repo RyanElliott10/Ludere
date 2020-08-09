@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <string>
 
+#include <ludere/UUID.hpp>
+
 namespace lud {
 
 struct FilledOrder
@@ -20,13 +22,20 @@ struct FilledOrder
         kInsufficientFunds
     };
 
-    FilledOrder(std::string security_, uint32_t numShares_, float sharePrice_, FilledOrderStatus orderStatus_)
+    FilledOrder(std::string security_, uint32_t numShares_, float sharePrice_, FilledOrderStatus orderStatus_,
+                UUID uuid_)
             : security(std::move(security_)), numShares(numShares_), sharePrice(sharePrice_), orderStatus(orderStatus_),
-              timestamp(std::chrono::system_clock::now())
+              uuid(uuid_), timestamp(std::chrono::system_clock::now())
     {}
 
-    [[nodiscard]] float totalOrderCost() const {
+    [[nodiscard]] float totalOrderCost() const
+    {
         return numShares * sharePrice;
+    }
+
+    static FilledOrder generateFailureFilledOrder(FilledOrderStatus orderStatus, UUID uuid_)
+    {
+        return FilledOrder(nullptr, 0, 0, orderStatus, uuid_);
     }
 
     std::string security;
@@ -34,6 +43,7 @@ struct FilledOrder
     float sharePrice;
     FilledOrderStatus orderStatus;
     std::chrono::system_clock::time_point timestamp;
+    UUID uuid;
 };
 
 }

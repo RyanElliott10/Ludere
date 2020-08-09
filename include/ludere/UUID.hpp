@@ -10,7 +10,8 @@
 
 namespace lud {
 
-// Universally Unique Identifier
+using UUIDHash = uint64_t;
+
 class UUID
 {
 public:
@@ -19,9 +20,20 @@ public:
 
     ~UUID() = default;
 
-private:
+    [[nodiscard]] UUIDHash hash() const
+    {
+        return m_id;
+    }
+
+    inline bool operator==(const UUID &other) const
+    {
+        return m_id == other.m_id;
+    }
+
+public:
     uint64_t m_id;
 
+private:
     static inline uint64_t s_inc = 0;
 };
 

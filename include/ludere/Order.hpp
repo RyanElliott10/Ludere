@@ -13,21 +13,12 @@
 
 #include <boost/function.hpp>
 
+#include <ludere/FilledOrder.hpp>
+#include <ludere/UUID.hpp>
+
 namespace lud {
 
-class OrderUUID
-{
-public:
-    OrderUUID() : m_id(OrderUUID::s_inc++)
-    {}
-
-    ~OrderUUID() = default;
-
-private:
-    uint64_t m_id;
-
-    static inline uint64_t s_inc = 0;
-};
+using StrategyCallbackDef = boost::function<void(FilledOrder)>;
 
 struct Order
 {
@@ -37,9 +28,9 @@ struct Order
         kShortPosition
     };
 
-    Order(std::string security_, uint32_t numShares_, PositionType positionType_)
-            : security(security_), numShares(numShares_), positionType(positionType_),
-              timestamp(std::chrono::system_clock::now()), uuid(OrderUUID())
+    Order(std::string security_, uint32_t numShares_, PositionType positionType_, StrategyCallbackDef callback_)
+            : security(security_), numShares(numShares_), positionType(positionType_), strategyCallback(callback_),
+              timestamp(std::chrono::system_clock::now()), uuid(UUID())
     {}
 
     virtual ~Order() = default;
@@ -50,14 +41,15 @@ public:
     std::string security;
     uint32_t numShares;
     PositionType positionType;
+    StrategyCallbackDef strategyCallback;
     std::chrono::system_clock::time_point timestamp;
-    OrderUUID uuid;
+    UUID uuid;
 };
 
 struct MarketOrder : public Order
 {
-    MarketOrder(std::string security, uint32_t numShares, PositionType positionType, float marketPrice_)
-            : Order(security, numShares, positionType), marketPrice(marketPrice_)
+    MarketOrder(std::string security, uint32_t numShares, PositionType positionType, float marketPrice_, StrategyCallbackDef callback_)
+            : Order(security, numShares, positionType, callback_), marketPrice(marketPrice_)
     {}
 
     float maxOrderCost() override
@@ -70,8 +62,8 @@ struct MarketOrder : public Order
 
 struct LimitOrder : public Order
 {
-    LimitOrder(std::string security, uint32_t numShares, PositionType positionType, float limitPrice_)
-            : Order(security, numShares, positionType), limitPrice(limitPrice_)
+    LimitOrder(std::string security, uint32_t numShares, PositionType positionType, float limitPrice_, StrategyCallbackDef callback_)
+            : Order(security, numShares, positionType, callback_), limitPrice(limitPrice_)
     {}
 
     float maxOrderCost() override

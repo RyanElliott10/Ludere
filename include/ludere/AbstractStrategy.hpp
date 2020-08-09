@@ -35,8 +35,14 @@ public:
     virtual void
     placeLimitOrder(std::string &security, uint32_t numShares, Order::PositionType positionType, float limitPrice)
     {
-        std::shared_ptr<Order> order = std::make_shared<LimitOrder>(security, numShares, positionType, limitPrice);
+//        [this](auto &&PH1) { handleFillEventConcluded(PH1); };
+        std::shared_ptr<Order> order = std::make_shared<LimitOrder>(security, numShares, positionType, limitPrice, [this](auto &&PH1) { handleConcludedOrder(PH1); });
         m_portfolio.placeOrder(order);
+    }
+
+    virtual void handleConcludedOrder(FilledOrder &filledOrder)
+    {
+
     }
 
 protected:

@@ -6,11 +6,16 @@
 #define LUDERE_PORTFOLIO_HPP
 
 
+#include <unordered_map>
+
+#include <boost/function.hpp>
+
 #include <ludere/Exchange.hpp>
 #include <ludere/FillEvent.hpp>
 #include <ludere/FilledOrder.hpp>
 #include <ludere/Order.hpp>
 #include <ludere/Position.hpp>
+#include <ludere/UUID.hpp>
 
 namespace lud {
 
@@ -29,6 +34,7 @@ private:
     float m_liquidCash;
     int m_numTrades;
     std::vector<Position> m_positions;
+    std::unordered_map<UUIDHash, StrategyCallbackDef> m_orderCallbacks;
 };
 
 }
