@@ -21,10 +21,8 @@ public:
     Exchange(const std::string &dataFilename, bool invertedDataStream);
 
     void trade();
-    void handleFillEvent(std::shared_ptr<Event> &event);
-    void handleMarketEvent(std::shared_ptr<Event> &event);
     void addEvent(std::shared_ptr<Event> &event);
-    void subscribeToDataStream(const std::shared_ptr<IDataEventSubscriber> &subscriber);
+    void subscribeToDataStream(const std::shared_ptr<DataEventSubscription> subscription);
 
 private:
     bool m_isTrading;
@@ -33,8 +31,13 @@ private:
     const bool m_invertedDataStream = false;
 
     // Subscribers
-    std::vector<const std::shared_ptr<IDataEventSubscriber>> m_dataEventSubscribers;
+    std::vector<const std::shared_ptr<DataEventSubscription>> m_dataEventSubscribers;
     std::vector<const std::shared_ptr<IMarketEventSubscriber>> m_marketEventSubscribers;
+
+private:
+    void streamData(CandlestickData &data);
+    void handleFillEvent(std::shared_ptr<Event> &event);
+    void handleMarketEvent(std::shared_ptr<Event> &event);
 };
 
 }

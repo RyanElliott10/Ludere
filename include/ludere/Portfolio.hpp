@@ -24,9 +24,11 @@ class Portfolio
 public:
     Portfolio(Exchange &exchange, float cash);
 
-    void handleFillEventConcluded(FilledOrder &filledOrder);
-    void placeOrder(std::shared_ptr<Order> &order);
+    void handleFillEventConcluded(std::shared_ptr<FilledOrder> &filledOrder);
+    void placeOrder(std::shared_ptr<Order> order);
     [[nodiscard]] bool verifyCapital(float totalCost) const;
+
+    void updateHistoric(const CandlestickData &data);
 
 private:
     Exchange &m_exchange;
@@ -35,6 +37,8 @@ private:
     int m_numTrades;
     std::vector<Position> m_positions;
     std::unordered_map<UUIDHash, StrategyCallbackDef> m_orderCallbacks;
+    std::unordered_map<UUIDHash, std::shared_ptr<Order>> m_allOrders; // All orders, even cancelled and failures
+    std::unordered_map<UUIDHash, std::shared_ptr<FilledOrder>> m_allFilledOrders;
 };
 
 }

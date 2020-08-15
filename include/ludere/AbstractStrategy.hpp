@@ -14,7 +14,7 @@
 
 namespace lud {
 
-class AbstractStrategy : public IMarketEventSubscriber, public IDataEventSubscriber
+class AbstractStrategy : public IDataEventSubscriber, public IMarketEventSubscriber
 {
 public:
     explicit AbstractStrategy(Portfolio &portfolio)
@@ -32,17 +32,20 @@ public:
 
     virtual void prepareToTrade() = 0;
 
-    virtual void
-    placeLimitOrder(std::string &security, uint32_t numShares, Order::PositionType positionType, float limitPrice)
+    virtual void placeLimitOrder(std::string &security, uint32_t numShares,
+                                 Order::PositionType positionType, float limitPrice)
     {
-//        [this](auto &&PH1) { handleFillEventConcluded(PH1); };
-        std::shared_ptr<Order> order = std::make_shared<LimitOrder>(security, numShares, positionType, limitPrice, [this](auto &&PH1) { handleConcludedOrder(PH1); });
+        std::shared_ptr<Order> order = std::make_shared<LimitOrder>(security, numShares, positionType, limitPrice,
+                                                                    [this](auto &&PH1) { handleConcludedOrder(PH1); });
         m_portfolio.placeOrder(order);
     }
 
-    virtual void handleConcludedOrder(FilledOrder &filledOrder)
-    {
+    virtual void handleConcludedOrder(std::shared_ptr<FilledOrder> filledOrder) = 0;
 
+    void handleMarketData(lud::CandlestickData &data) override
+    {
+        // Track marketValue at each data reception
+        m_portfolio.updateHistoric(data);
     }
 
 protected:

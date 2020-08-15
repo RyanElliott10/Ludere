@@ -32,10 +32,7 @@ void Exchange::trade()
     std::ifstream file(m_dataFilename);
     lud::CandlestickData candle;
     while (file >> candle) {
-        for (const auto &subscriber : m_dataEventSubscribers) {
-            subscriber->handleMarketData(candle);
-        }
-
+        streamData(candle);
         while (!m_eventQueue.empty()) {
             std::shared_ptr<Event> event = m_eventQueue.front();
             switch (event->type) {
@@ -54,19 +51,29 @@ void Exchange::trade()
     }
 }
 
+void Exchange::streamData(CandlestickData &candle)
+{
+    for (const auto &subscriber : m_dataEventSubscribers) {
+        subscriber->ref->handleMarketData(candle);
+    }
+}
+
 void Exchange::handleFillEvent(std::shared_ptr<Event> &event)
 {
     auto &fillEvent = dynamic_cast<FillEvent &>(*event);
+    std::shared_ptr<FilledOrder> filledOrder;
+
     if (fillEvent.verifyPortfolioFunds(fillEvent.order->maxOrderCost())) {
-        std::shared_ptr<Order> order = fillEvent.order;
-        FilledOrder filledOrder(order->security, order->numShares, order->maxOrderCost() / order->numShares,
-                                FilledOrder::FilledOrderStatus::kSuccess, fillEvent.order->uuid);
-        fillEvent.callback(filledOrder);
+        auto order = fillEvent.order;
+        filledOrder = std::make_shared<FilledOrder>(order->security, order->numShares,
+                                                    order->maxOrderCost() / order->numShares,
+                                                    FilledOrder::FilledOrderStatus::kSuccess, fillEvent.order->uuid);
     } else {
-        FilledOrder filledOrder = FilledOrder::generateFailureFilledOrder(
-                FilledOrder::FilledOrderStatus::kInsufficientFunds, fillEvent.order->uuid);
-        fillEvent.callback(filledOrder);
+        filledOrder = std::move(
+                FilledOrder::generateFailureFilledOrder(FilledOrder::FilledOrderStatus::kInsufficientFunds,
+                                                        fillEvent.order->uuid));
     }
+    fillEvent.callback(filledOrder);
 }
 
 void Exchange::handleMarketEvent(std::shared_ptr<Event> &event)
@@ -82,9 +89,9 @@ void Exchange::addEvent(std::shared_ptr<Event> &event)
     m_eventQueue.push(event);
 }
 
-void Exchange::subscribeToDataStream(const std::shared_ptr<IDataEventSubscriber> &subscriber)
+void Exchange::subscribeToDataStream(const std::shared_ptr<DataEventSubscription> subscription)
 {
-    m_dataEventSubscribers.push_back(subscriber);
+    m_dataEventSubscribers.push_back(subscription);
 }
 
 }

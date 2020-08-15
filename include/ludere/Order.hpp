@@ -18,7 +18,7 @@
 
 namespace lud {
 
-using StrategyCallbackDef = boost::function<void(FilledOrder)>;
+using StrategyCallbackDef = boost::function<void(std::shared_ptr<FilledOrder>)>;
 
 struct Order
 {

@@ -26,7 +26,7 @@ public:
         return std::string_view(&m_line[m_data[index] + 1], m_data[index + 1] - (m_data[index] + 1));
     }
 
-    std::size_t size() const
+    [[nodiscard]] std::size_t size() const
     {
         return m_data.size() - 1;
     }

@@ -33,9 +33,9 @@ struct FilledOrder
         return numShares * sharePrice;
     }
 
-    static FilledOrder generateFailureFilledOrder(FilledOrderStatus orderStatus, UUID uuid_)
+    static std::unique_ptr<FilledOrder> generateFailureFilledOrder(FilledOrderStatus orderStatus, UUID uuid_)
     {
-        return FilledOrder(nullptr, 0, 0, orderStatus, uuid_);
+        return std::make_unique<FilledOrder>(nullptr, 0, 0, orderStatus, uuid_);
     }
 
     std::string security;

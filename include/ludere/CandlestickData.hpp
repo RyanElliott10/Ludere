@@ -48,7 +48,7 @@ public:
         return std::string_view(&m_line[m_data[index] + 1], m_data[index + 1] - (m_data[index] + 1));
     }
 
-    std::size_t size() const
+    [[nodiscard]] std::size_t size() const
     {
         return m_data.size() - 1;
     }
@@ -72,7 +72,7 @@ public:
             std::string tmp = m_line.substr(m_data[i] + 1, m_data[i + 1] - (m_data[i] + 1));
             // Detect header rows
             if (i > 0 && !isNumber(tmp)) {
-                LD_WARN("Error parsing CSV row (potentially header. If so, disregard this message): %s", tmp.c_str());
+                LD_WARN("Error parsing CSV row (potentially header. If so, disregard this message): %s", tmp.c_str())
                 return CSVRowSuccessReturnCode::kFailure;
             }
 

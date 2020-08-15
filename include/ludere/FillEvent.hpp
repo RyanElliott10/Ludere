@@ -18,14 +18,14 @@ class FillEvent : public Event
 {
 public:
     explicit FillEvent(std::shared_ptr<Order> _order)
-            : order(_order)
+            : order(std::move(_order))
     {
         type = EventType::kFillEvent;
     }
 
 public:
     std::shared_ptr<Order> order;
-    boost::function<void(FilledOrder &)> callback;
+    boost::function<void(std::shared_ptr<FilledOrder> &)> callback;
     boost::function<bool(float)> verifyPortfolioFunds;
 };
 
