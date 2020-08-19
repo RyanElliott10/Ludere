@@ -31,7 +31,7 @@ public:
     /// Verify a Portfolio has enough capital to perform a trade.
     [[nodiscard]] bool verifyCapital(float totalCost) const;
 
-    void handleMarketData(const std::unordered_map<std::string, lud::CandlestickData> &data);
+    void handleMarketData(const std::unordered_map<std::string, lud::CandlestickData> &data) override;
 
     /// Update the Portfolio's balance against the current positions and current market data
     void updateHistoric(const CandlestickDataMap &data);

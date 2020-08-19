@@ -48,14 +48,6 @@ void Portfolio::handleMarketData(const std::unordered_map<std::string, lud::Cand
     updateHistoric(data);
 }
 
-/**
- * Updates the portfolio's historic value against a CandlestickData instance.
- * TODO: Perhaps subscribe a portfolio to a datastream. Further, support requests for a specific subset of securities.
- *      If a Portfolio is only interested in Apple, TSLA, and SPY, it should only receive information about those
- *      securities. In other words, plan out the complete data streaming flow and capabilities.
- *      In this case, the data should be an unordered_map. Allow the Portfolio to query the data for specific tickers.
- * @param data
- */
 void Portfolio::updateHistoric(const CandlestickDataMap &data)
 {
     float worth = 0;

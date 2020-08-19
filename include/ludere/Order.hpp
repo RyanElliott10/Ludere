@@ -16,10 +16,15 @@
 #include <ludere/FilledOrder.hpp>
 #include <ludere/UUID.hpp>
 
+// TODO: Reconsider the raw data storage of the Order class (and it's subclasses). Consider breaking data into smaller
+//      objects. Further reading: https://softwareengineering.stackexchange.com/questions/305313/avoiding-constructors-with-many-arguments
+
 namespace lud {
 
 using StrategyCallbackDef = boost::function<void(std::shared_ptr<FilledOrder>)>;
 
+// TODO: Implement ability to specify how long an order lasts. A current holdup of execution time is too many Orders
+//      being added to the OrderQueue that will never be filled and are weeks, months, years old.
 struct Order
 {
     enum class PositionType
@@ -28,8 +33,14 @@ struct Order
         kShortPosition
     };
 
-    Order(std::string security_, uint32_t numShares_, PositionType positionType_, StrategyCallbackDef callback_)
-            : security(std::move(security_)), numShares(numShares_), positionType(positionType_), strategyCallback(std::move(callback_)),
+    enum class OrderType
+    {
+        kLimitOrder,
+        kMarketOrder
+    };
+
+    Order(std::string security_, uint32_t numShares_, OrderType orderType_, PositionType positionType_, StrategyCallbackDef callback_)
+            : security(std::move(security_)), numShares(numShares_), orderType(orderType_), positionType(positionType_), strategyCallback(std::move(callback_)),
               timestamp(std::chrono::system_clock::now()), uuid(UUID())
     {}
 
@@ -37,10 +48,10 @@ struct Order
 
     virtual float maxOrderCost() = 0;
 
-public:
     std::string security;
     uint32_t numShares;
     PositionType positionType;
+    OrderType orderType;
     StrategyCallbackDef strategyCallback;
     std::chrono::system_clock::time_point timestamp;
     UUID uuid;
@@ -49,7 +60,7 @@ public:
 struct MarketOrder : public Order
 {
     MarketOrder(std::string security, uint32_t numShares, PositionType positionType, float marketPrice_, StrategyCallbackDef callback_)
-            : Order(std::move(security), numShares, positionType, std::move(callback_)), marketPrice(marketPrice_)
+            : Order(std::move(security), numShares, OrderType::kMarketOrder, positionType, std::move(callback_)), marketPrice(marketPrice_)
     {}
 
     float maxOrderCost() override
@@ -63,7 +74,7 @@ struct MarketOrder : public Order
 struct LimitOrder : public Order
 {
     LimitOrder(std::string security, uint32_t numShares, PositionType positionType, float limitPrice_, StrategyCallbackDef callback_)
-            : Order(std::move(security), numShares, positionType, std::move(callback_)), limitPrice(limitPrice_)
+            : Order(std::move(security), numShares, OrderType::kLimitOrder, positionType, std::move(callback_)), limitPrice(limitPrice_)
     {}
 
     float maxOrderCost() override

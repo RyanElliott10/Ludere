@@ -54,24 +54,43 @@ void Exchange::streamData(const CandlestickDataMap &data)
     }
 }
 
-// TODO: Develop a more robust order-filling mechanism.
+// TODO: Clean up the logic and casting here. We should realistically have two different order flows: one for
+//      MarketOrders and one for LimitOrders
 void Exchange::handleOrderEvent(const std::shared_ptr<Event> &event, const CandlestickDataMap &candles)
 {
     std::shared_ptr<OrderEvent> orderEvent = std::dynamic_pointer_cast<OrderEvent>(event);
     m_orderQueue.push_back(orderEvent);
     for (auto it = m_orderQueue.begin(); it != m_orderQueue.end(); it++) {
         // TODO: Verify the current data against the prices the Order is requesting
-        if ((*it)->verifyPortfolioFunds(orderEvent->order->maxOrderCost())) {
-            auto order = orderEvent->order;
-            std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
-                                                                                     order->maxOrderCost() /
-                                                                                     order->numShares,
-                                                                                     FilledOrder::FilledOrderStatus::kSuccess,
-                                                                                     orderEvent->order->uuid);
-            orderEvent->callback(std::move(filledOrder));
-            it = m_orderQueue.erase(it);
+        Order::OrderType &type = (*it)->order->orderType;
+        if (type == Order::OrderType::kLimitOrder) {
+            handleLimitOrder(std::dynamic_pointer_cast<LimitOrder>((*it)->order), candles, it);
+        } else if (type == Order::OrderType::kMarketOrder) {
+            handleMarketOrder(std::dynamic_pointer_cast<MarketOrder>((*it)->order), candles, it);
         }
     }
+}
+
+// TODO: Implement slippage and more realistic market conditions. This is guaranteed to fill your order at the best
+//      price and immediately (as long as the security's price is below the limit)
+void Exchange::handleLimitOrder(const std::shared_ptr<LimitOrder> &order, const CandlestickDataMap &candles,
+                                std::list<std::shared_ptr<OrderEvent>>::iterator &it)
+{
+    const float securityPrice = candles.at((*it)->order->security).close;
+    if (order->limitPrice >= securityPrice && (*it)->verifyPortfolioFunds(order->maxOrderCost())) {
+        std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
+                                                                                 securityPrice,
+                                                                                 FilledOrder::FilledOrderStatus::kSuccess,
+                                                                                 order->uuid);
+        (*it)->callback(std::move(filledOrder));
+        it = m_orderQueue.erase(it);
+    }
+}
+
+void Exchange::handleMarketOrder(const std::shared_ptr<MarketOrder> &order, const CandlestickDataMap &candles,
+                                 std::list<std::shared_ptr<OrderEvent>>::iterator &it)
+{
+
 }
 
 void Exchange::handleMarketEvent(const std::shared_ptr<Event> &event)

@@ -47,6 +47,8 @@ private:
     void streamData(const CandlestickDataMap &data);
     void handleOrderEvent(const std::shared_ptr<Event> &event, const CandlestickDataMap &candles);
     void handleMarketEvent(const std::shared_ptr<Event> &event);
+    void handleLimitOrder(const std::shared_ptr<LimitOrder> &order, const CandlestickDataMap &candles, std::list<std::shared_ptr<OrderEvent>>::iterator &it);
+    void handleMarketOrder(const std::shared_ptr<MarketOrder> &order, const CandlestickDataMap &candles, std::list<std::shared_ptr<OrderEvent>>::iterator &it);
 };
 
 }

@@ -10,7 +10,6 @@
 
 #include <ludere/Event.hpp>
 
-// TODO: Reconsider this design pattern. Perhaps EventQueue should be a class all on its own
 #define EventQueue std::queue<std::shared_ptr<Event>>
 
 

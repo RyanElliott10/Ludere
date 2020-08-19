@@ -18,9 +18,6 @@ struct IDataStreamer
 {
     virtual ~IDataStreamer() = default;
 
-    // TODO: This should return a std::unordered_map<std::string("TICKER"), CandlestickData>. Much more performant and
-    //      easier to utilize
-
     /// Called by an exchange to request the next data points.
     virtual CandlestickDataMap pollNextStream() = 0;
 };

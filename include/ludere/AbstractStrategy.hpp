@@ -41,10 +41,6 @@ public:
         m_portfolio->placeOrder(order);
     }
 
-    // TODO: Remove the reliance upon a deriving subclass to call and update this. Should be automatic; no user should
-    //      need to manually update their Portfolio
-    void handleMarketData(const std::unordered_map<std::string, lud::CandlestickData> &data) override = 0;
-
     /// Called right before trading on the Exchange begins. Can be used as an alternative method to subscribe to an
     /// Exchange's data stream.
     virtual void prepareToTrade() = 0;
