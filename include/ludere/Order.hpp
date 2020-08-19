@@ -29,7 +29,7 @@ struct Order
     };
 
     Order(std::string security_, uint32_t numShares_, PositionType positionType_, StrategyCallbackDef callback_)
-            : security(security_), numShares(numShares_), positionType(positionType_), strategyCallback(callback_),
+            : security(std::move(security_)), numShares(numShares_), positionType(positionType_), strategyCallback(std::move(callback_)),
               timestamp(std::chrono::system_clock::now()), uuid(UUID())
     {}
 
@@ -49,7 +49,7 @@ public:
 struct MarketOrder : public Order
 {
     MarketOrder(std::string security, uint32_t numShares, PositionType positionType, float marketPrice_, StrategyCallbackDef callback_)
-            : Order(security, numShares, positionType, callback_), marketPrice(marketPrice_)
+            : Order(std::move(security), numShares, positionType, std::move(callback_)), marketPrice(marketPrice_)
     {}
 
     float maxOrderCost() override
@@ -63,7 +63,7 @@ struct MarketOrder : public Order
 struct LimitOrder : public Order
 {
     LimitOrder(std::string security, uint32_t numShares, PositionType positionType, float limitPrice_, StrategyCallbackDef callback_)
-            : Order(security, numShares, positionType, callback_), limitPrice(limitPrice_)
+            : Order(std::move(security), numShares, positionType, std::move(callback_)), limitPrice(limitPrice_)
     {}
 
     float maxOrderCost() override

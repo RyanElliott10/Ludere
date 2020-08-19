@@ -2,8 +2,8 @@
 // Created by Ryan Elliott on 7/30/20.
 //
 
-#ifndef LUDERE_FILLEVENT_HPP
-#define LUDERE_FILLEVENT_HPP
+#ifndef LUDERE_ORDEREVENT_HPP
+#define LUDERE_ORDEREVENT_HPP
 
 
 #include <boost/function.hpp>
@@ -14,22 +14,22 @@
 
 namespace lud {
 
-class FillEvent : public Event
+class OrderEvent : public Event
 {
 public:
-    explicit FillEvent(std::shared_ptr<Order> _order)
+    explicit OrderEvent(std::shared_ptr<Order> _order)
             : order(std::move(_order))
     {
-        type = EventType::kFillEvent;
+        type = EventType::kOrderEvent;
     }
 
 public:
     std::shared_ptr<Order> order;
-    boost::function<void(std::shared_ptr<FilledOrder> &)> callback;
+    boost::function<void(std::shared_ptr<FilledOrder>)> callback;
     boost::function<bool(float)> verifyPortfolioFunds;
 };
 
 }
 
 
-#endif //LUDERE_FILLEVENT_HPP
+#endif //LUDERE_ORDEREVENT_HPP

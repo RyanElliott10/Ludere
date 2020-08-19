@@ -11,24 +11,32 @@
 #include <boost/function.hpp>
 
 #include <ludere/Exchange.hpp>
-#include <ludere/FillEvent.hpp>
+#include <ludere/OrderEvent.hpp>
 #include <ludere/FilledOrder.hpp>
+#include <ludere/IDataEventSubscriber.hpp>
 #include <ludere/Order.hpp>
 #include <ludere/Position.hpp>
 #include <ludere/UUID.hpp>
 
 namespace lud {
 
-class Portfolio
+class Portfolio : public IDataEventSubscriber
 {
 public:
     Portfolio(Exchange &exchange, float cash);
 
-    void handleFillEventConcluded(std::shared_ptr<FilledOrder> &filledOrder);
+    void handleOrderEventConcluded(std::shared_ptr<FilledOrder> &filledOrder);
     void placeOrder(std::shared_ptr<Order> order);
+
+    /// Verify a Portfolio has enough capital to perform a trade.
     [[nodiscard]] bool verifyCapital(float totalCost) const;
 
-    void updateHistoric(const CandlestickData &data);
+    void handleMarketData(const std::unordered_map<std::string, lud::CandlestickData> &data);
+
+    /// Update the Portfolio's balance against the current positions and current market data
+    void updateHistoric(const CandlestickDataMap &data);
+
+    [[nodiscard]] inline float netValue() const { return m_portfolioValue + m_liquidCash; }
 
 private:
     Exchange &m_exchange;

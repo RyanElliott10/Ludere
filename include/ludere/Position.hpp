@@ -12,14 +12,12 @@
 
 namespace lud {
 
-class Position
+struct Position
 {
-public:
     explicit Position(std::shared_ptr<FilledOrder> &filledOrder_)
             : filledOrder(filledOrder_)
     {}
 
-private:
     std::shared_ptr<Order> order;
     std::shared_ptr<FilledOrder> filledOrder;
 };

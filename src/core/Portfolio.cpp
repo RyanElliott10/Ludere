@@ -6,14 +6,16 @@
 
 namespace lud {
 
-Portfolio::Portfolio(Exchange &exchange, float cash)
+Portfolio::Portfolio(Exchange &exchange, const float cash)
         : m_exchange(exchange), m_liquidCash(cash), m_portfolioValue(cash), m_numTrades(0)
 {}
 
-void Portfolio::handleFillEventConcluded(std::shared_ptr<FilledOrder> &filledOrder)
+// TODO: Aggregate holdings per security. If a user buys 2 AAPL and then 5 AAPL, the Portfolio should view that as 7
+//      AAPL rather than 2 and 5. Further, there should be information about entry and exit (average price, etc.)
+void Portfolio::handleOrderEventConcluded(std::shared_ptr<FilledOrder> &filledOrder)
 {
     if (filledOrder->orderStatus == FilledOrder::FilledOrderStatus::kSuccess) {
-        std::cout << "Total cost: " << filledOrder->totalOrderCost() << " for " << filledOrder->security << std::endl;
+        LUD_DEBUG("Total order cost: $%.2f for %s", filledOrder->totalOrderCost(), filledOrder->security.c_str());
         m_positions.emplace_back(filledOrder);
         m_liquidCash -= filledOrder->totalOrderCost();
         m_numTrades++;
@@ -26,9 +28,9 @@ void Portfolio::handleFillEventConcluded(std::shared_ptr<FilledOrder> &filledOrd
 void Portfolio::placeOrder(std::shared_ptr<Order> order)
 {
     m_allOrders.emplace(order->uuid.hash(), order);
-    std::shared_ptr<Event> event = std::make_shared<FillEvent>(order);
-    std::dynamic_pointer_cast<FillEvent>(event)->callback = [this](auto &&PH1) { handleFillEventConcluded(PH1); };
-    std::dynamic_pointer_cast<FillEvent>(event)->verifyPortfolioFunds = [this](float totalCost) {
+    std::shared_ptr<Event> event = std::make_shared<OrderEvent>(order);
+    std::dynamic_pointer_cast<OrderEvent>(event)->callback = [this](auto &&PH1) { handleOrderEventConcluded(PH1); };
+    std::dynamic_pointer_cast<OrderEvent>(event)->verifyPortfolioFunds = [this](float totalCost) {
         return verifyCapital(totalCost);
     };
 
@@ -36,23 +38,31 @@ void Portfolio::placeOrder(std::shared_ptr<Order> order)
     m_exchange.addEvent(event);
 }
 
-bool Portfolio::verifyCapital(float totalCost) const
+bool Portfolio::verifyCapital(const float totalCost) const
 {
     return m_liquidCash >= totalCost;
+}
+
+void Portfolio::handleMarketData(const std::unordered_map<std::string, lud::CandlestickData> &data)
+{
+    updateHistoric(data);
 }
 
 /**
  * Updates the portfolio's historic value against a CandlestickData instance.
  * TODO: Perhaps subscribe a portfolio to a datastream. Further, support requests for a specific subset of securities.
  *      If a Portfolio is only interested in Apple, TSLA, and SPY, it should only receive information about those
- *      securities. In other words, plan out the complete data streaming flow and capabilities
+ *      securities. In other words, plan out the complete data streaming flow and capabilities.
+ *      In this case, the data should be an unordered_map. Allow the Portfolio to query the data for specific tickers.
  * @param data
  */
-void Portfolio::updateHistoric(const CandlestickData &data)
+void Portfolio::updateHistoric(const CandlestickDataMap &data)
 {
-    for (auto position : m_positions) {
-
+    float worth = 0;
+    for (const auto &position : m_positions) {
+        worth += position.filledOrder->numShares * data.at(position.filledOrder->security).close;
     }
+    m_portfolioValue = worth;
 }
 
 }

@@ -12,7 +12,7 @@ namespace lud {
 
 enum class EventType : uint8_t
 {
-    kFillEvent, // A request to fill an Order
+    kOrderEvent, // A request to fill an Order
     kMarketEvent, // A market-wide event. Market open/close, trading halt, etc.
 };
 
@@ -26,8 +26,8 @@ public:
 inline std::ostream &operator<<(std::ostream &strm, const EventType &type)
 {
     switch (type) {
-    case EventType::kFillEvent:
-        return strm << "kFillEvent";
+    case EventType::kOrderEvent:
+        return strm << "kOrderEvent";
     case EventType::kMarketEvent:
         return strm << "kMarketEvent";
     }

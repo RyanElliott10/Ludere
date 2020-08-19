@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <ludere/Log.hpp>
+#include <ludere/UUID.hpp>
 
 namespace lud {
 
@@ -33,12 +34,13 @@ enum class CandlestickDataCSVHeaders
 class CandlestickData
 {
 public:
-    std::string ticker = "AAPL";
+    std::string ticker = "TSLA";  // TODO: Fix this
     float open;
     float high;
     float low;
     float close;
     uint32_t volume;
+    UUID uuid = UUID();
 
     // TODO: Add support for converting string timestamps into time_t (UNIX)
     std::string timestamp;
@@ -72,7 +74,7 @@ public:
             std::string tmp = m_line.substr(m_data[i] + 1, m_data[i + 1] - (m_data[i] + 1));
             // Detect header rows
             if (i > 0 && !isNumber(tmp)) {
-                LD_WARN("Error parsing CSV row (potentially header. If so, disregard this message): %s", tmp.c_str())
+                LUD_WARN("Error parsing CSV row (potentially header. If so, disregard this message): %s", tmp.c_str())
                 return CSVRowSuccessReturnCode::kFailure;
             }
 
@@ -101,6 +103,11 @@ public:
         return CSVRowSuccessReturnCode::kSuccess;
     }
 
+    bool operator==(const CandlestickData &candle) const
+    {
+        return timestamp == candle.timestamp && ticker == candle.ticker;
+    }
+
 private:
     std::string m_line;
     std::vector<int> m_data;
@@ -119,8 +126,8 @@ private:
 
 inline std::ostream &operator<<(std::ostream &strm, const CandlestickData &candle)
 {
-    return strm << candle.timestamp << " " << candle.open << " " << candle.high << " " << candle.low << " "
-                << candle.close << " " << candle.volume;
+    return strm << candle.ticker << " ts: " << candle.timestamp << " open: " << candle.open << " high: " << candle.high
+                << " low: " << candle.low << " close: " << candle.close << " vol: " << candle.volume;
 }
 
 inline std::istream &operator>>(std::istream &strm, CandlestickData &candle)
@@ -131,6 +138,19 @@ inline std::istream &operator>>(std::istream &strm, CandlestickData &candle)
     }
     return strm;
 }
+
+}
+
+namespace std {
+
+template<>
+struct hash<lud::CandlestickData>
+{
+    inline size_t operator()(const lud::CandlestickData &candle) const
+    {
+        return hash<int>()(candle.uuid.hash());
+    }
+};
 
 }
 

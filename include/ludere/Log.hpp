@@ -54,11 +54,11 @@ private:
     static constexpr const char *s_errorMsg = "LUD_ERROR: ";
 };
 
-#define LD_DEBUG(format, ...)\
+#define LUD_DEBUG(format, ...)\
     ludere::Log::debug(format, __VA_ARGS__);
-#define LD_WARN(format, ...)\
+#define LUD_WARN(format, ...)\
     ludere::Log::warn(format, __VA_ARGS__);
-#define LD_ERROR(format, ...)\
+#define LUD_ERROR(format, ...)\
     ludere::Log::error(format, __VA_ARGS__);
 
 }
