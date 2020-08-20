@@ -46,26 +46,7 @@ void Exchange::trade()
             m_eventQueue.pop();
         }
 
-        auto it = m_orderQueue.begin();
-        while (it != m_orderQueue.end()) {
-            if ((*it)->order->isExpired(candles.at("TSLA").timestamp)) {
-                const std::shared_ptr<LimitOrder> &order = std::dynamic_pointer_cast<LimitOrder>((*it)->order);
-                std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
-                                                                                         0,
-                                                                                         FilledOrder::FilledOrderStatus::kExpired,
-                                                                                         order->uuid);
-                (*it)->callback(std::move(filledOrder));
-                it = m_orderQueue.erase(it);
-                continue;
-            }
-            Order::OrderType &type = (*it)->order->orderType;
-            if (type == Order::OrderType::kLimitOrder) {
-                handleLimitOrder(std::dynamic_pointer_cast<LimitOrder>((*it)->order), candles, it);
-            } else if (type == Order::OrderType::kMarketOrder) {
-                handleMarketOrder(std::dynamic_pointer_cast<MarketOrder>((*it)->order), candles, it);
-            }
-            it++;
-        }
+        fillOrders(candles);
     }
 }
 
@@ -82,6 +63,31 @@ void Exchange::handleOrderEvent(const std::shared_ptr<Event> &event, const Candl
     m_orderQueue.push_back(orderEvent);
 }
 
+void Exchange::fillOrders(const CandlestickDataMap &candles)
+{
+    auto it = m_orderQueue.begin();
+    while (it != m_orderQueue.end()) {
+        if ((*it)->order->isExpired(candles.at("TSLA").timestamp)) {
+            const std::shared_ptr<LimitOrder> &order = std::dynamic_pointer_cast<LimitOrder>((*it)->order);
+            std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
+                                                                                     0,
+                                                                                     FilledOrder::FilledOrderStatus::kExpired,
+                                                                                     candles.at("TSLA").timestamp,
+                                                                                     order->uuid);
+            (*it)->callback(std::move(filledOrder));
+            it = m_orderQueue.erase(it);
+            continue;
+        }
+        Order::OrderType &type = (*it)->order->orderType;
+        if (type == Order::OrderType::kLimitOrder) {
+            handleLimitOrder(std::dynamic_pointer_cast<LimitOrder>((*it)->order), candles, it);
+        } else if (type == Order::OrderType::kMarketOrder) {
+            handleMarketOrder(std::dynamic_pointer_cast<MarketOrder>((*it)->order), candles, it);
+        }
+        it++;
+    }
+}
+
 // TODO: Implement slippage and more realistic market conditions. This is guaranteed to fill your order at the best
 //      price and immediately (as long as the security's price is below the limit)
 void Exchange::handleLimitOrder(const std::shared_ptr<LimitOrder> &order, const CandlestickDataMap &candles,
@@ -92,6 +98,7 @@ void Exchange::handleLimitOrder(const std::shared_ptr<LimitOrder> &order, const 
         std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
                                                                                  securityPrice,
                                                                                  FilledOrder::FilledOrderStatus::kSuccess,
+                                                                                 candles.at((*it)->order->security).timestamp,
                                                                                  order->uuid);
         (*it)->callback(std::move(filledOrder));
         it = m_orderQueue.erase(it);
@@ -114,6 +121,7 @@ void Exchange::handleMarketOrder(const std::shared_ptr<MarketOrder> &order, cons
         std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
                                                                                  securityPrice,
                                                                                  FilledOrder::FilledOrderStatus::kSuccess,
+                                                                                 candles.at((*it)->order->security).timestamp,
                                                                                  order->uuid);
         (*it)->callback(std::move(filledOrder));
         it = m_orderQueue.erase(it);

@@ -10,19 +10,31 @@ Portfolio::Portfolio(Exchange &exchange, const float cash)
         : m_exchange(exchange), m_liquidCash(cash), m_portfolioValue(cash), m_numTrades(0)
 {}
 
-// TODO: Aggregate holdings per security. If a user buys 2 AAPL and then 5 AAPL, the Portfolio should view that as 7
-//      AAPL rather than 2 and 5. Further, there should be information about entry and exit (average price, etc.)
 void Portfolio::handleOrderEventConcluded(std::shared_ptr<FilledOrder> &filledOrder)
 {
     if (filledOrder->orderStatus == FilledOrder::FilledOrderStatus::kSuccess) {
         LUD_DEBUG("Total order cost: $%.2f for %s", filledOrder->totalOrderCost(), filledOrder->security.c_str());
-        m_positions.emplace_back(filledOrder);
+        addPosition(filledOrder);
         m_liquidCash -= filledOrder->totalOrderCost();
         m_numTrades++;
     }
 
     m_orderCallbacks.at(filledOrder->uuid.hash())(filledOrder);
     m_allFilledOrders.emplace(filledOrder->uuid.hash(), filledOrder);
+}
+
+void Portfolio::addPosition(std::shared_ptr<FilledOrder> filledOrder)
+{
+    if (m_holdings.find(filledOrder->security) != m_holdings.end()) {
+        Holding &holding = m_holdings.at(filledOrder->security);
+        holding.m_positions.emplace_back(filledOrder);
+        holding.numShares += filledOrder->numShares;
+    } else {
+        Holding holding(filledOrder->security);
+        holding.m_positions.emplace_back(filledOrder);
+        holding.numShares += filledOrder->numShares;
+        m_holdings.emplace(std::move(holding.security), std::move(holding));
+    }
 }
 
 void Portfolio::placeOrder(std::shared_ptr<Order> order)
@@ -51,8 +63,8 @@ void Portfolio::handleMarketData(const std::unordered_map<std::string, lud::Cand
 void Portfolio::updateHistoric(const CandlestickDataMap &data)
 {
     float worth = 0;
-    for (const auto &position : m_positions) {
-        worth += position.filledOrder->numShares * data.at(position.filledOrder->security).close;
+    for (const auto &holding : m_holdings) {
+        worth += holding.second.numShares * data.at(holding.first).close;
     }
     m_portfolioValue = worth;
 }

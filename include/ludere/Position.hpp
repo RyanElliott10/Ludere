@@ -22,6 +22,30 @@ struct Position
     std::shared_ptr<FilledOrder> filledOrder;
 };
 
+struct Holding
+{
+    explicit Holding(std::string security_)
+            : security(std::move(security_)), numShares(0)
+    {}
+
+    std::vector<Position> m_positions;
+    std::string security;
+    float numShares;
+};
+
+}
+
+namespace std {
+
+template<>
+struct hash<lud::Holding>
+{
+    inline size_t operator()(const lud::Holding &holding) const
+    {
+        return hash<std::string>()(holding.security);
+    }
+};
+
 }
 
 

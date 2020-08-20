@@ -43,10 +43,13 @@ private:
     float m_portfolioValue;
     float m_liquidCash;
     int m_numTrades;
-    std::vector<Position> m_positions;
+    std::unordered_map<std::string, Holding> m_holdings;
     std::unordered_map<UUIDHash, StrategyCallbackDef> m_orderCallbacks;
     std::unordered_map<UUIDHash, std::shared_ptr<Order>> m_allOrders; // All orders, even cancelled and failures
     std::unordered_map<UUIDHash, std::shared_ptr<FilledOrder>> m_allFilledOrders;
+
+private:
+    void addPosition(std::shared_ptr<FilledOrder> filledOrder);
 };
 
 }
