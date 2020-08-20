@@ -35,7 +35,7 @@ public:
         va_start(argptr, format);
         vfprintf(stdout, format, argptr);
         va_end(argptr);
-        printf("\n");
+        printf("\033[0m\n");
     }
 
     static inline void error(const char *format, ...)
@@ -45,7 +45,7 @@ public:
         va_start(argptr, format);
         vfprintf(stdout, format, argptr);
         va_end(argptr);
-        printf("\n");
+        printf("\033[0m\n");
     }
 
 private:

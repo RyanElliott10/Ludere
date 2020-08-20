@@ -23,7 +23,7 @@ namespace lud {
 
 using StrategyCallbackDef = boost::function<void(std::shared_ptr<FilledOrder>)>;
 
-// TODO: Implement ability to specify how long an order lasts. A current holdup of execution time is too many Orders
+// TODO: Implement order lifetimes (this order is good til n). Execution current slow downs stem from too many Orders
 //      being added to the OrderQueue that will never be filled and are weeks, months, years old.
 struct Order
 {

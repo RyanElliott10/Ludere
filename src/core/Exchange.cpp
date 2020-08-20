@@ -54,14 +54,11 @@ void Exchange::streamData(const CandlestickDataMap &data)
     }
 }
 
-// TODO: Clean up the logic and casting here. We should realistically have two different order flows: one for
-//      MarketOrders and one for LimitOrders
 void Exchange::handleOrderEvent(const std::shared_ptr<Event> &event, const CandlestickDataMap &candles)
 {
     std::shared_ptr<OrderEvent> orderEvent = std::dynamic_pointer_cast<OrderEvent>(event);
     m_orderQueue.push_back(orderEvent);
     for (auto it = m_orderQueue.begin(); it != m_orderQueue.end(); it++) {
-        // TODO: Verify the current data against the prices the Order is requesting
         Order::OrderType &type = (*it)->order->orderType;
         if (type == Order::OrderType::kLimitOrder) {
             handleLimitOrder(std::dynamic_pointer_cast<LimitOrder>((*it)->order), candles, it);
