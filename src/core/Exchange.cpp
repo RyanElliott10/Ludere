@@ -31,6 +31,7 @@ void Exchange::trade()
     CandlestickDataMap candles;
     while (!(candles = m_dataStream->pollNextStream()).empty()) {
         streamData(candles);
+
         while (!m_eventQueue.empty()) {
             std::shared_ptr<Event> event = m_eventQueue.front();
             switch (event->type) {
@@ -43,6 +44,27 @@ void Exchange::trade()
             }
 
             m_eventQueue.pop();
+        }
+
+        auto it = m_orderQueue.begin();
+        while (it != m_orderQueue.end()) {
+            if ((*it)->order->isExpired(candles.at("TSLA").timestamp)) {
+                const std::shared_ptr<LimitOrder> &order = std::dynamic_pointer_cast<LimitOrder>((*it)->order);
+                std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
+                                                                                         0,
+                                                                                         FilledOrder::FilledOrderStatus::kExpired,
+                                                                                         order->uuid);
+                (*it)->callback(std::move(filledOrder));
+                it = m_orderQueue.erase(it);
+                continue;
+            }
+            Order::OrderType &type = (*it)->order->orderType;
+            if (type == Order::OrderType::kLimitOrder) {
+                handleLimitOrder(std::dynamic_pointer_cast<LimitOrder>((*it)->order), candles, it);
+            } else if (type == Order::OrderType::kMarketOrder) {
+                handleMarketOrder(std::dynamic_pointer_cast<MarketOrder>((*it)->order), candles, it);
+            }
+            it++;
         }
     }
 }
@@ -58,14 +80,6 @@ void Exchange::handleOrderEvent(const std::shared_ptr<Event> &event, const Candl
 {
     std::shared_ptr<OrderEvent> orderEvent = std::dynamic_pointer_cast<OrderEvent>(event);
     m_orderQueue.push_back(orderEvent);
-    for (auto it = m_orderQueue.begin(); it != m_orderQueue.end(); it++) {
-        Order::OrderType &type = (*it)->order->orderType;
-        if (type == Order::OrderType::kLimitOrder) {
-            handleLimitOrder(std::dynamic_pointer_cast<LimitOrder>((*it)->order), candles, it);
-        } else if (type == Order::OrderType::kMarketOrder) {
-            handleMarketOrder(std::dynamic_pointer_cast<MarketOrder>((*it)->order), candles, it);
-        }
-    }
 }
 
 // TODO: Implement slippage and more realistic market conditions. This is guaranteed to fill your order at the best
@@ -74,7 +88,7 @@ void Exchange::handleLimitOrder(const std::shared_ptr<LimitOrder> &order, const 
                                 std::list<std::shared_ptr<OrderEvent>>::iterator &it)
 {
     const float securityPrice = candles.at((*it)->order->security).close;
-    if (order->limitPrice >= securityPrice && (*it)->verifyPortfolioFunds(order->maxOrderCost())) {
+    if (order->limitPrice >= securityPrice && (*it)->verifyPortfolioFunds(order->numShares * securityPrice)) {
         std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
                                                                                  securityPrice,
                                                                                  FilledOrder::FilledOrderStatus::kSuccess,
@@ -84,10 +98,26 @@ void Exchange::handleLimitOrder(const std::shared_ptr<LimitOrder> &order, const 
     }
 }
 
+/**
+ * Typical MarketOrder handling: the order is filled at the highest market price.
+ * TODO: Place on the top of the order queue. Will require using a PriorityQueue rather than a list, or can add
+ *      additional logic.
+ * @param order
+ * @param candles
+ * @param it
+ */
 void Exchange::handleMarketOrder(const std::shared_ptr<MarketOrder> &order, const CandlestickDataMap &candles,
                                  std::list<std::shared_ptr<OrderEvent>>::iterator &it)
 {
-
+    const float securityPrice = candles.at((*it)->order->security).close;
+    if ((*it)->verifyPortfolioFunds(order->numShares * securityPrice)) {
+        std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
+                                                                                 securityPrice,
+                                                                                 FilledOrder::FilledOrderStatus::kSuccess,
+                                                                                 order->uuid);
+        (*it)->callback(std::move(filledOrder));
+        it = m_orderQueue.erase(it);
+    }
 }
 
 void Exchange::handleMarketEvent(const std::shared_ptr<Event> &event)

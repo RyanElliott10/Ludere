@@ -19,7 +19,8 @@ struct FilledOrder
     enum class FilledOrderStatus
     {
         kSuccess,
-        kInsufficientFunds
+        kInsufficientFunds,
+        kExpired
     };
 
     FilledOrder(std::string security_, uint32_t numShares_, float sharePrice_, FilledOrderStatus orderStatus_,
