@@ -34,9 +34,9 @@ public:
 
     /// Main connection to the Portfolio to create and place a LimitOrder.
     virtual void
-    placeLimitOrder(std::string security, uint32_t numShares, Order::PositionType positionType, OrderLifetime lifetime, float limitPrice)
+    placeLimitOrder(std::string security, uint32_t numShares, Order::OrderSignal signal, Order::PositionType positionType, OrderLifetime lifetime, float limitPrice)
     {
-        std::shared_ptr<Order> order = std::make_shared<LimitOrder>(security, numShares, positionType, limitPrice,
+        std::shared_ptr<Order> order = std::make_shared<LimitOrder>(security, numShares, signal, positionType, limitPrice,
                                                                     lifetime,
                                                                     [this](auto &&PH1) { handleConcludedOrder(PH1); });
         m_portfolio->placeOrder(order);

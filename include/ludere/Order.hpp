@@ -48,22 +48,29 @@ struct OrderLifetime
 
 struct Order
 {
+    // This may not be needed... can be inferred?
     enum class PositionType
     {
         kLongPosition,
         kShortPosition
     };
-
     enum class OrderType
     {
         kLimitOrder,
         kMarketOrder
     };
+    enum class OrderSignal
+    {
+        kBuy,
+        kSell
+    };
 
-    Order(std::string security_, uint32_t numShares_, OrderType orderType_, PositionType positionType_,
-          OrderLifetime orderLifetime_, StrategyCallbackDef callback_)
-            : security(std::move(security_)), numShares(numShares_), orderType(orderType_), positionType(positionType_),
-              orderLifetime(orderLifetime_), strategyCallback(std::move(callback_)), uuid(UUID())
+    Order(std::string security_, uint32_t numShares_, Order::OrderSignal orderSignal_,
+          Order::OrderType orderType_, Order::PositionType positionType_, OrderLifetime orderLifetime_,
+          StrategyCallbackDef callback_)
+            : security(std::move(security_)), numShares(numShares_), orderSignal(orderSignal_), orderType(orderType_),
+              positionType(positionType_), orderLifetime(orderLifetime_), strategyCallback(std::move(callback_)),
+              uuid(UUID())
     {}
 
     [[nodiscard]] inline bool isExpired(time_t currentTime) const
@@ -75,20 +82,30 @@ struct Order
 
     virtual float maxOrderCost() = 0;
 
+    // OrderAmounts
     std::string security;
     uint32_t numShares;
-    PositionType positionType;
-    OrderType orderType;
+
+    // Can be grouped into some class, OrderMetaData
+    Order::OrderSignal orderSignal;
+    Order::PositionType positionType;
+    Order::OrderType orderType;
     OrderLifetime orderLifetime;
+
+    // OrderHandling
     StrategyCallbackDef strategyCallback;
+
     UUID uuid;
 };
 
 struct LimitOrder : public Order
 {
-    LimitOrder(std::string security, uint32_t numShares, PositionType positionType, float limitPrice_,
+    LimitOrder(std::string security, uint32_t numShares, Order::OrderSignal orderSignal,
+               Order::PositionType positionType,
+               float limitPrice_,
                OrderLifetime orderLifetime_, StrategyCallbackDef callback_)
-            : Order(std::move(security), numShares, OrderType::kLimitOrder, positionType, orderLifetime_,
+            : Order(std::move(security), numShares, orderSignal, Order::OrderType::kLimitOrder, positionType,
+                    orderLifetime_,
                     std::move(callback_)),
               limitPrice(limitPrice_)
     {}
@@ -101,9 +118,12 @@ struct LimitOrder : public Order
 
 struct MarketOrder : public Order
 {
-    MarketOrder(std::string security, uint32_t numShares, PositionType positionType, float marketPrice_,
+    MarketOrder(std::string security, uint32_t numShares, Order::OrderSignal orderSignal,
+                Order::PositionType positionType,
+                float marketPrice_,
                 OrderLifetime orderLifetime_, StrategyCallbackDef callback_)
-            : Order(std::move(security), numShares, OrderType::kMarketOrder, positionType, orderLifetime_,
+            : Order(std::move(security), numShares, orderSignal, Order::OrderType::kMarketOrder, positionType,
+                    orderLifetime_,
                     std::move(callback_)),
               marketPrice(marketPrice_)
     {}

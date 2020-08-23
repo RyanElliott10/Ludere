@@ -7,7 +7,7 @@
 namespace lud {
 
 Portfolio::Portfolio(Exchange &exchange, const float cash)
-        : m_exchange(exchange), m_liquidCash(cash), m_portfolioValue(cash), m_numTrades(0)
+        : m_exchange(exchange), m_startingCapital(cash), m_liquidCash(cash), m_portfolioValue(cash), m_numTrades(0)
 {}
 
 void Portfolio::handleOrderEventConcluded(std::shared_ptr<FilledOrder> &filledOrder)
@@ -37,6 +37,7 @@ void Portfolio::addPosition(std::shared_ptr<FilledOrder> filledOrder)
     }
 }
 
+// TODO: Support sell orders
 void Portfolio::placeOrder(std::shared_ptr<Order> order)
 {
     m_allOrders.emplace(order->uuid.hash(), order);
@@ -50,7 +51,7 @@ void Portfolio::placeOrder(std::shared_ptr<Order> order)
     m_exchange.addEvent(event);
 }
 
-bool Portfolio::verifyCapital(const float totalCost) const
+[[nodiscard]] bool Portfolio::verifyCapital(const float totalCost) const
 {
     return m_liquidCash >= totalCost;
 }
@@ -67,6 +68,13 @@ void Portfolio::updateHistoric(const CandlestickDataMap &data)
         worth += holding.second.numShares * data.at(holding.first).close;
     }
     m_portfolioValue = worth;
+}
+
+void Portfolio::summary() const
+{
+    std::cout << "Portfolio Summary" << std::endl;
+    std::cout << "\tBalance: " << m_portfolioValue + m_liquidCash << std::endl;
+    std::cout << "\tReturn: " << (m_portfolioValue + m_liquidCash) / m_startingCapital * 100 << "%" << std::endl;
 }
 
 }

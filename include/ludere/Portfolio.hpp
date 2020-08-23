@@ -38,8 +38,11 @@ public:
 
     [[nodiscard]] inline float netValue() const { return m_portfolioValue + m_liquidCash; }
 
+    void summary() const;
+
 private:
     Exchange &m_exchange;
+    float m_startingCapital;
     float m_portfolioValue;
     float m_liquidCash;
     int m_numTrades;

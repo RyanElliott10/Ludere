@@ -67,12 +67,12 @@ void Exchange::fillOrders(const CandlestickDataMap &candles)
 {
     auto it = m_orderQueue.begin();
     while (it != m_orderQueue.end()) {
-        if ((*it)->order->isExpired(candles.at("TSLA").timestamp)) {
+        if ((*it)->order->isExpired(candles.at("AAPL").timestamp)) {
             const std::shared_ptr<LimitOrder> &order = std::dynamic_pointer_cast<LimitOrder>((*it)->order);
             std::unique_ptr<FilledOrder> filledOrder = std::make_unique<FilledOrder>(order->security, order->numShares,
                                                                                      0,
                                                                                      FilledOrder::FilledOrderStatus::kExpired,
-                                                                                     candles.at("TSLA").timestamp,
+                                                                                     candles.at("AAPL").timestamp,
                                                                                      order->uuid);
             (*it)->callback(std::move(filledOrder));
             it = m_orderQueue.erase(it);
