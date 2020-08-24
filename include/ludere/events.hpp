@@ -6,9 +6,9 @@
 #define LUDERE_EVENTS_HPP
 
 
-#include <ludere/Event.hpp>
-#include <ludere/MarketEvent.hpp>
-#include <ludere/OrderEvent.hpp>
+#include <ludere/event.hpp>
+#include <ludere/market_event.hpp>
+#include <ludere/order_event.hpp>
 
 
 #endif //LUDERE_EVENTS_HPP

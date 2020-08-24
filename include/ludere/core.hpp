@@ -8,9 +8,9 @@
 
 #include <queue>
 
-#include <ludere/Event.hpp>
+#include <ludere/event.hpp>
 
-#define EventQueue std::queue<std::shared_ptr<Event>>
+#define event_queue std::queue<std::shared_ptr<event>>
 
 
 #endif //LUDERE_CORE_HPP

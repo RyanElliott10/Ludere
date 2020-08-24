@@ -10,24 +10,24 @@
 
 namespace lud {
 
-using UUIDHash = uint64_t;
+using uuid_hash = uint64_t;
 
-class UUID
+class uuid
 {
 public:
-    UUID() : m_id(UUID::s_inc++)
+    uuid() : m_id(uuid::s_inc++)
     {}
 
-    ~UUID() = default;
+    ~uuid() = default;
 
-    [[nodiscard]] UUIDHash hash() const
+    [[nodiscard]] uuid_hash hash() const
     {
         return m_id;
     }
 
-    inline bool operator==(const UUID &other) const
+    inline bool operator==(const uuid &other_) const
     {
-        return m_id == other.m_id;
+        return m_id == other_.m_id;
     }
 
 public:

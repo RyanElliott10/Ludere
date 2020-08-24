@@ -115,7 +115,7 @@ if ($quotetypes ne "both" && $quotetypes ne "angle" && $quotetypes ne "quote")
 sub tidypath {
 	$_ = shift;
 	$_ = canonpath($_);
-	# Use only one type of slash
+	# Use only one m_type of slash
 	s:\\:/:g;
 	# Remove constructs like xyz/..
 	while (s:[^/]+?/\.\./::) {};

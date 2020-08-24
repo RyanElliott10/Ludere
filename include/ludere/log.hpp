@@ -13,14 +13,14 @@
 #define YELLOW_ANSI_CODE "\033[01;33m"
 #define RED_ANSI_CODE "\033[01;31m"
 
-namespace ludere {
+namespace lud {
 
-class Log
+class log
 {
 public:
     static inline void debug(const char *format, ...)
     {
-        printf("%s%s", MAGENTA_ANSI_CODE, Log::s_debugMsg);
+        printf("%s%s", MAGENTA_ANSI_CODE, log::s_debug_msg);
         va_list argptr;
         va_start(argptr, format);
         vfprintf(stdout, format, argptr);
@@ -30,7 +30,7 @@ public:
 
     static inline void warn(const char *format, ...)
     {
-        printf("%s%s", YELLOW_ANSI_CODE, Log::s_warnMsg);
+        printf("%s%s", YELLOW_ANSI_CODE, log::s_warn_msg);
         va_list argptr;
         va_start(argptr, format);
         vfprintf(stdout, format, argptr);
@@ -40,7 +40,7 @@ public:
 
     static inline void error(const char *format, ...)
     {
-        printf("%s%s", RED_ANSI_CODE, Log::s_errorMsg);
+        printf("%s%s", RED_ANSI_CODE, log::s_error_msg);
         va_list argptr;
         va_start(argptr, format);
         vfprintf(stdout, format, argptr);
@@ -49,17 +49,17 @@ public:
     }
 
 private:
-    static constexpr const char *s_debugMsg = "LUD_DEBUG: ";
-    static constexpr const char *s_warnMsg = "LUD_WARN: ";
-    static constexpr const char *s_errorMsg = "LUD_ERROR: ";
+    static constexpr const char *s_debug_msg = "LUD_DEBUG: ";
+    static constexpr const char *s_warn_msg = "LUD_WARN: ";
+    static constexpr const char *s_error_msg = "LUD_ERROR: ";
 };
 
 #define LUD_DEBUG(format, ...)\
-    ludere::Log::debug(format, __VA_ARGS__);
+    lud::log::debug(format, __VA_ARGS__);
 #define LUD_WARN(format, ...)\
-    ludere::Log::warn(format, __VA_ARGS__);
+    lud::log::warn(format, __VA_ARGS__);
 #define LUD_ERROR(format, ...)\
-    ludere::Log::error(format, __VA_ARGS__);
+    lud::log::error(format, __VA_ARGS__);
 
 }
 

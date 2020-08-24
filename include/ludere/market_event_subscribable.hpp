@@ -6,15 +6,15 @@
 #define LUDERE_MARKETEVENTSUBSCRIBER_HPP
 
 
-#include <ludere/MarketEvent.hpp>
+#include <ludere/market_event.hpp>
 
 namespace lud {
 
-struct IMarketEventSubscriber
+struct market_event_subscribable
 {
-    virtual ~IMarketEventSubscriber() = default;
+    virtual ~market_event_subscribable() = default;
 
-    virtual void notifyOfMarketEvent(MarketEvent &marketEvent) = 0;
+    virtual void notify_of_market_event(market_event &market_event_) = 0;
 };
 
 }
