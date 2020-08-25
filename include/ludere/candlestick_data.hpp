@@ -46,8 +46,8 @@ public:
               m_volume(volume_)
     {}
 
-    explicit candlestick_data(const std::string ticker_)
-            : m_ticker(ticker_)
+    explicit candlestick_data(const std::string ticker_, time_t timestamp_)
+            : m_ticker(ticker_), m_timestamp(timestamp_)
     {}
 
     std::string m_ticker;

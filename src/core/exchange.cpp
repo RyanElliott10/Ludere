@@ -67,7 +67,6 @@ void exchange::fill_orders(const candlestick_data_map &candles_)
 {
     auto it_ = m_order_queue.begin();
     while (it_ != m_order_queue.end()) {
-        // TODO: Add metadata about the candles to avoid accessing a specific security (timestamp)
         if ((*it_)->m_order->is_expired(candles_.at("timestamp").m_timestamp)) {
             const std::shared_ptr<limit_order> &order_ = std::dynamic_pointer_cast<limit_order>((*it_)->m_order);
             std::unique_ptr<filled_order> filled_order_ = std::make_unique<filled_order>(order_->m_security,
@@ -133,15 +132,21 @@ void exchange::handle_buy_limit_order(const std::shared_ptr<limit_order> &order_
 {
     const float security_price_ = candles_.at(order_->m_security).m_close;
     if (order_->m_limit_price >= security_price_ &&
-        (*it_)->m_verify_portfolio_funds(order_->m_num_shares * security_price_)) {
+        (*it_)->m_verify_portfolio_funds(order_, security_price_)) {
         std::unique_ptr<filled_order> filled_order_ = std::make_unique<filled_order>(order_->m_security,
                                                                                      order_->m_num_shares,
                                                                                      security_price_,
                                                                                      order_->m_order_signal,
                                                                                      enums::order::fill_statuses::SUCCESS,
                                                                                      candles_.at(
-                                                                                             order_->m_security).m_timestamp,
+                                                                                             "timestamp").m_timestamp,
                                                                                      order_->m_uuid);
+        (*it_)->m_callback(std::move(filled_order_));
+        it_ = m_order_queue.erase(it_);
+    } else if (!(*it_)->m_verify_portfolio_funds(order_, security_price_)) {
+        auto filled_order_ = limit_order::generate_filled_order_failure(order_,
+                                                                        enums::order::fill_statuses::INSUFFICIENT_FUNDS,
+                                                                        candles_.at("timestamp").m_timestamp);
         (*it_)->m_callback(std::move(filled_order_));
         it_ = m_order_queue.erase(it_);
     } else { it_++; }
@@ -159,8 +164,14 @@ void exchange::handle_sell_limit_order(const std::shared_ptr<limit_order> &order
                                                                                      order_->m_order_signal,
                                                                                      enums::order::fill_statuses::SUCCESS,
                                                                                      candles_.at(
-                                                                                             order_->m_security).m_timestamp,
+                                                                                             "timestamp").m_timestamp,
                                                                                      order_->m_uuid);
+        (*it_)->m_callback(std::move(filled_order_));
+        it_ = m_order_queue.erase(it_);
+    } else if (!(*it_)->m_verify_portfolio_shares(order_->m_num_shares, order_->m_security)) {
+        auto filled_order_ = limit_order::generate_filled_order_failure(order_,
+                                                                        enums::order::fill_statuses::INSUFFICIENT_FUNDS,
+                                                                        candles_.at("timestamp").m_timestamp);
         (*it_)->m_callback(std::move(filled_order_));
         it_ = m_order_queue.erase(it_);
     } else { it_++; }
@@ -171,15 +182,21 @@ exchange::handle_buy_market_order(const std::shared_ptr<market_order> &order_, c
                                   std::list<std::shared_ptr<order_event>, std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
 {
     const float security_price_ = candles_.at(order_->m_security).m_close;
-    if ((*it_)->m_verify_portfolio_funds(order_->m_num_shares * security_price_)) {
+    if ((*it_)->m_verify_portfolio_funds(order_, security_price_)) {
         std::unique_ptr<filled_order> filled_order_ = std::make_unique<filled_order>(order_->m_security,
                                                                                      order_->m_num_shares,
                                                                                      security_price_,
                                                                                      order_->m_order_signal,
                                                                                      enums::order::fill_statuses::SUCCESS,
                                                                                      candles_.at(
-                                                                                             (*it_)->m_order->m_security).m_timestamp,
+                                                                                             "timestamp").m_timestamp,
                                                                                      order_->m_uuid);
+        (*it_)->m_callback(std::move(filled_order_));
+        it_ = m_order_queue.erase(it_);
+    } else {
+        auto filled_order_ = market_order::generate_filled_order_failure(order_,
+                                                                         enums::order::fill_statuses::INSUFFICIENT_FUNDS,
+                                                                         candles_.at("timestamp").m_timestamp);
         (*it_)->m_callback(std::move(filled_order_));
         it_ = m_order_queue.erase(it_);
     }

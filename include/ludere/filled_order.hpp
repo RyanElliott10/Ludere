@@ -28,14 +28,6 @@ struct filled_order
         return m_num_shares * m_share_price;
     }
 
-    static std::unique_ptr<filled_order> generate_failed_order_failure(enums::order::signals order_signal_,
-                                                                       enums::order::fill_statuses order_status_,
-                                                                       time_t timestamp_, uuid uuid_)
-    {
-        return std::move(
-                std::make_unique<filled_order>(nullptr, 0, 0, order_signal_, order_status_, timestamp_, uuid_));
-    }
-
     std::string m_security;
     uint32_t m_num_shares;
     float m_share_price;

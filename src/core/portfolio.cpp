@@ -33,6 +33,7 @@ void portfolio::handle_buy_order_event_concluded(std::shared_ptr<filled_order> &
                   filled_order_->total_order_cost(), filled_order_->m_security.c_str());
         add_position(filled_order_);
         m_liquid_cash -= filled_order_->total_order_cost();
+        m_liquid_cash -= m_brokerage_fees.fees_for_order(filled_order_);
         m_num_trades++;
     }
 }
@@ -44,6 +45,7 @@ void portfolio::handle_sell_order_event_concluded(std::shared_ptr<filled_order> 
                   filled_order_->m_security.c_str());
         add_position(filled_order_);
         m_liquid_cash += filled_order_->total_order_cost();
+        m_liquid_cash -= m_brokerage_fees.fees_for_order(filled_order_);
         m_num_trades++;
     }
 }
@@ -71,7 +73,6 @@ void portfolio::add_position(std::shared_ptr<filled_order> filled_order_)
     }
 }
 
-// TODO: Support sell orders
 void portfolio::place_order(std::shared_ptr<order> order_)
 {
     m_all_orders.emplace(order_->m_uuid.hash(), order_);
@@ -80,8 +81,8 @@ void portfolio::place_order(std::shared_ptr<order> order_)
         handle_order_event_concluded(PH1);
     };
     if (order_->m_order_signal == enums::order::signals::BUY) {
-        std::dynamic_pointer_cast<order_event>(event_)->m_verify_portfolio_funds = [this](const float total_cost_) {
-            return verify_capital(total_cost_);
+        std::dynamic_pointer_cast<order_event>(event_)->m_verify_portfolio_funds = [this](const std::shared_ptr<order> &order_, const float security_price_) {
+            return verify_capital(order_, security_price_);
         };
     } else if (order_->m_order_signal == enums::order::signals::SELL) {
         std::dynamic_pointer_cast<order_event>(event_)->m_verify_portfolio_shares = [this](const int num_shares_,
@@ -94,8 +95,10 @@ void portfolio::place_order(std::shared_ptr<order> order_)
     m_exchange.add_event(event_);
 }
 
-[[nodiscard]] bool portfolio::verify_capital(const float total_cost_) const
+[[nodiscard]] bool portfolio::verify_capital(const std::shared_ptr<order> &order_, const float security_price_) const
 {
+    float brokerage_fees_ = m_brokerage_fees.fees_for_order(order_);
+    float total_cost_ = brokerage_fees_ + (order_->m_num_shares * security_price_);
     return m_liquid_cash >= total_cost_;
 }
 
@@ -126,8 +129,9 @@ void portfolio::summary() const
 {
     std::cout << "Portfolio Summary" << std::endl;
     std::cout << "\tBalance: $" << m_portfolio_value + m_liquid_cash << std::endl;
-    std::cout << "\tReturn: " << (m_portfolio_value + m_liquid_cash) / m_starting_capital * 100 << "%" << std::endl;
+    std::cout << "\tReturn: " << (m_portfolio_value + m_liquid_cash - m_starting_capital) / m_starting_capital * 100 << "%" << std::endl;
     std::cout << "\tNumber Trades: " << m_num_trades << std::endl;
+    std::cout << "\tBrokerage Fees: " << std::endl;
 }
 
 }

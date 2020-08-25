@@ -10,6 +10,7 @@
 
 #include <boost/function.hpp>
 
+#include <ludere/brokerage_fees.hpp>
 #include <ludere/exchange.hpp>
 #include <ludere/order_event.hpp>
 #include <ludere/filled_order.hpp>
@@ -23,23 +24,33 @@ namespace lud {
 class portfolio : public data_event_subscribable
 {
 public:
-    // TODO: Add brokerage fees
     portfolio(exchange &exchange_, float cash_);
+
+    inline void set_brokerage_fees(brokerage_fees brokerage_fees_)
+    {
+        m_brokerage_fees = brokerage_fees_;
+    }
 
     void handle_buy_order_event_concluded(std::shared_ptr<filled_order> &filled_order_);
     void handle_sell_order_event_concluded(std::shared_ptr<filled_order> &filled_order_);
     void place_order(std::shared_ptr<order> order_);
 
     /// Verify a Portfolio has enough capital to perform a trade.
-    [[nodiscard]] bool verify_capital(float total_cost_) const;
+    [[nodiscard]] bool verify_capital(const std::shared_ptr<order> &order_, const float security_price_) const;
+
+    /// Ensures the Portfolio has at least num_shares_ for security_.
     [[nodiscard]] bool verify_num_shares(int num_shares_, const std::string &security_) const;
+
+    /// Ensures the Portfolio is liquid enough for a given cost. Does not natively incorporate brokerage fees.
+    [[nodiscard]] bool soft_verify_capital(const float cost_) const { return m_liquid_cash >= cost_; }
 
     void handle_market_data(const std::unordered_map<std::string, lud::candlestick_data> &data_) override;
 
     /// Update the Portfolio's balance against the current positions and current market data
     void update_historic(const candlestick_data_map &data_);
 
-    [[nodiscard]] inline float net_value() const { return m_portfolio_value + m_liquid_cash; }
+    [[nodiscard]] inline float net_value() const
+    { return m_portfolio_value + m_liquid_cash; }
 
     void summary() const;
 
@@ -49,6 +60,9 @@ private:
     float m_portfolio_value;
     float m_liquid_cash;
     int m_num_trades;
+
+    brokerage_fees m_brokerage_fees;
+
     std::unordered_map<std::string, holding> m_holdings;
     std::unordered_map<uuid_hash, strategy_callback_def> m_order_callbacks;
     std::unordered_map<uuid_hash, std::shared_ptr<order>> m_all_orders; // All orders, even cancelled and failures

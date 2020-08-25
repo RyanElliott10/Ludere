@@ -54,12 +54,18 @@ private:
     static constexpr const char *s_error_msg = "LUD_ERROR: ";
 };
 
+#ifndef NDEBUG
 #define LUD_DEBUG(format, ...)\
     lud::log::debug(format, __VA_ARGS__);
 #define LUD_WARN(format, ...)\
     lud::log::warn(format, __VA_ARGS__);
 #define LUD_ERROR(format, ...)\
     lud::log::error(format, __VA_ARGS__);
+#else
+#define LUD_DEBUG(format, ...)
+#define LUD_WARN(format, ...)
+#define LUD_ERROR(format, ...)
+#endif
 
 }
 

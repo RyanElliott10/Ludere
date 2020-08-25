@@ -42,7 +42,8 @@ struct order_lifetime
 
 struct order
 {
-    order(std::string security_, uint32_t num_shares_, enums::order::signals order_signal_, enums::order::types order_type_,
+    order(std::string security_, uint32_t num_shares_, enums::order::signals order_signal_,
+          enums::order::types order_type_,
           enums::order::position_types position_type_, order_lifetime order_lifetime_, strategy_callback_def callback_)
             : m_security(std::move(security_)), m_num_shares(num_shares_), m_order_signal(order_signal_),
               m_order_type(order_type_), m_position_type(position_type_), m_order_lifetime(order_lifetime_),
@@ -88,6 +89,15 @@ struct limit_order : public order
         return m_limit_price * m_num_shares;
     }
 
+    static std::unique_ptr<filled_order> generate_filled_order_failure(const std::shared_ptr<limit_order> &order_,
+                                                                       const enums::order::fill_statuses order_status_,
+                                                                       time_t timestamp_)
+    {
+        return std::move(std::make_unique<filled_order>(order_->m_security, order_->m_num_shares, order_->m_limit_price,
+                                                        order_->m_order_signal, order_status_, timestamp_,
+                                                        order_->m_uuid));
+    }
+
     float m_limit_price;
 };
 
@@ -105,6 +115,15 @@ struct market_order : public order
     inline float max_order_cost() override
     {
         return m_market_price * m_num_shares;
+    }
+
+    static std::unique_ptr<filled_order> generate_filled_order_failure(const std::shared_ptr<market_order> &order_,
+                                                                       const enums::order::fill_statuses order_status_,
+                                                                       time_t timestamp_)
+    {
+        return std::move(
+                std::make_unique<filled_order>(order_->m_security, order_->m_num_shares, order_->m_market_price,
+                                               order_->m_order_signal, order_status_, timestamp_, order_->m_uuid));
     }
 
     float m_market_price;

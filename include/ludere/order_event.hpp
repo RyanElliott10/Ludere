@@ -26,7 +26,7 @@ public:
 public:
     std::shared_ptr<order> m_order;
     boost::function<void(std::shared_ptr<filled_order>)> m_callback;
-    boost::function<bool(const float)> m_verify_portfolio_funds;
+    boost::function<bool(const std::shared_ptr<order> &, const float)> m_verify_portfolio_funds;
     boost::function<bool(const int, const std::string &)> m_verify_portfolio_shares;
 };
 
