@@ -23,13 +23,16 @@ namespace lud {
 class portfolio : public data_event_subscribable
 {
 public:
-    portfolio(exchange &exchange_, const float cash_);
+    // TODO: Add brokerage fees
+    portfolio(exchange &exchange_, float cash_);
 
-    void handleOrderEventConcluded(std::shared_ptr<filled_order> &filled_order_);
-    void placeOrder(std::shared_ptr<order> total_cost_);
+    void handle_buy_order_event_concluded(std::shared_ptr<filled_order> &filled_order_);
+    void handle_sell_order_event_concluded(std::shared_ptr<filled_order> &filled_order_);
+    void place_order(std::shared_ptr<order> order_);
 
     /// Verify a Portfolio has enough capital to perform a trade.
-    [[nodiscard]] bool verifyCapital(float total_cost_) const;
+    [[nodiscard]] bool verify_capital(float total_cost_) const;
+    [[nodiscard]] bool verify_num_shares(int num_shares_, const std::string &security_) const;
 
     void handle_market_data(const std::unordered_map<std::string, lud::candlestick_data> &data_) override;
 
@@ -52,7 +55,8 @@ private:
     std::unordered_map<uuid_hash, std::shared_ptr<filled_order>> m_all_filled_orders;
 
 private:
-    void addPosition(std::shared_ptr<filled_order> filledOrder);
+    void handle_order_event_concluded(std::shared_ptr<filled_order> &filled_order_);
+    void add_position(std::shared_ptr<filled_order> filled_order_);
 };
 
 }

@@ -20,13 +20,14 @@ public:
     explicit order_event(std::shared_ptr<order> order_)
             : m_order(std::move(order_))
     {
-        m_type = event_type::ORDER_EVENT;
+        m_type = event_type::ORDER;
     }
 
 public:
     std::shared_ptr<order> m_order;
     boost::function<void(std::shared_ptr<filled_order>)> m_callback;
-    boost::function<bool(float)> m_verify_portfolio_funds;
+    boost::function<bool(const float)> m_verify_portfolio_funds;
+    boost::function<bool(const int, const std::string &)> m_verify_portfolio_shares;
 };
 
 }

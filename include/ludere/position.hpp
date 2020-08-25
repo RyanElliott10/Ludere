@@ -30,7 +30,7 @@ struct holding
 
     std::vector<position> m_positions;
     std::string m_security;
-    float m_num_shares;
+    int m_num_shares;
 };
 
 }

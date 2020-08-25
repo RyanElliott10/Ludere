@@ -12,8 +12,8 @@ namespace lud {
 
 enum class event_type : uint8_t
 {
-    ORDER_EVENT, // A request to fill an Order
-    MARKET_EVENT, // A market-wide event. Market open/close, trading halt, etc.
+    ORDER, // A request to fill an Order
+    MARKET, // A market-wide event. Market open/close, trading halt, etc.
 };
 
 class event
@@ -26,10 +26,10 @@ public:
 inline std::ostream &operator<<(std::ostream &strm_, const event_type &type_)
 {
     switch (type_) {
-    case event_type::ORDER_EVENT:
-        return strm_ << "ORDER_EVENT";
-    case event_type::MARKET_EVENT:
-        return strm_ << "MARKET_EVENT";
+    case event_type::ORDER:
+        return strm_ << "ORDER";
+    case event_type::MARKET:
+        return strm_ << "MARKET";
     }
 }
 

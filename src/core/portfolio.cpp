@@ -7,53 +7,104 @@
 namespace lud {
 
 portfolio::portfolio(exchange &exchange_, const float cash_)
-        : m_exchange(exchange_), m_starting_capital(cash_), m_liquid_cash(cash_), m_portfolio_value(cash_), m_num_trades(0)
+        : m_exchange(exchange_), m_starting_capital(cash_), m_liquid_cash(cash_), m_portfolio_value(cash_),
+          m_num_trades(0)
 {}
 
-void portfolio::handleOrderEventConcluded(std::shared_ptr<filled_order> &filled_order_)
+void portfolio::handle_order_event_concluded(std::shared_ptr<filled_order> &filled_order_)
 {
-    if (filled_order_->m_order_status == filled_order::filled_order_statuses::SUCCESS) {
-        LUD_DEBUG("Total order cost: $%.2f for %s", filled_order_->total_order_cost(), filled_order_->m_security.c_str());
-        addPosition(filled_order_);
-        m_liquid_cash -= filled_order_->total_order_cost();
-        m_num_trades++;
+    switch (filled_order_->m_order_signal) {
+    case enums::order::signals::BUY:
+        handle_buy_order_event_concluded(filled_order_);
+        break;
+    case enums::order::signals::SELL:
+        handle_sell_order_event_concluded(filled_order_);
+        break;
     }
 
     m_order_callbacks.at(filled_order_->m_uuid.hash())(filled_order_);
     m_all_filled_orders.emplace(filled_order_->m_uuid.hash(), filled_order_);
 }
 
-void portfolio::addPosition(std::shared_ptr<filled_order> filledOrder)
+void portfolio::handle_buy_order_event_concluded(std::shared_ptr<filled_order> &filled_order_)
 {
-    if (m_holdings.find(filledOrder->m_security) != m_holdings.end()) {
-        holding &holding_ = m_holdings.at(filledOrder->m_security);
-        holding_.m_positions.emplace_back(filledOrder);
-        holding_.m_num_shares += filledOrder->m_num_shares;
-    } else {
-        holding holding_(filledOrder->m_security);
-        holding_.m_positions.emplace_back(filledOrder);
-        holding_.m_num_shares += filledOrder->m_num_shares;
-        m_holdings.emplace(std::move(holding_.m_security), std::move(holding_));
+    if (filled_order_->m_order_status == enums::order::fill_statuses::SUCCESS) {
+        LUD_DEBUG("Buy order executed: %d @ $%.2f for %s", filled_order_->m_num_shares,
+                  filled_order_->total_order_cost(), filled_order_->m_security.c_str());
+        add_position(filled_order_);
+        m_liquid_cash -= filled_order_->total_order_cost();
+        m_num_trades++;
+    }
+}
+
+void portfolio::handle_sell_order_event_concluded(std::shared_ptr<filled_order> &filled_order_)
+{
+    if (filled_order_->m_order_status == enums::order::fill_statuses::SUCCESS) {
+        LUD_DEBUG("Sell order executed: %d @ $%.2f for %s", filled_order_->m_num_shares, filled_order_->m_share_price,
+                  filled_order_->m_security.c_str());
+        add_position(filled_order_);
+        m_liquid_cash += filled_order_->total_order_cost();
+        m_num_trades++;
+    }
+}
+
+void portfolio::add_position(std::shared_ptr<filled_order> filled_order_)
+{
+    switch (filled_order_->m_order_signal) {
+    case enums::order::signals::BUY:
+        if (m_holdings.find(filled_order_->m_security) != m_holdings.end()) {
+            holding &holding_ = m_holdings.at(filled_order_->m_security);
+            holding_.m_positions.emplace_back(filled_order_);
+            holding_.m_num_shares += filled_order_->m_num_shares;
+        } else {
+            holding holding_(filled_order_->m_security);
+            holding_.m_positions.emplace_back(filled_order_);
+            holding_.m_num_shares += filled_order_->m_num_shares;
+            m_holdings.emplace(std::move(holding_.m_security), std::move(holding_));
+        }
+        break;
+    case enums::order::signals::SELL:
+        holding &holding_ = m_holdings.at(filled_order_->m_security);
+        holding_.m_positions.emplace_back(filled_order_);
+        holding_.m_num_shares -= filled_order_->m_num_shares;
+        break;
     }
 }
 
 // TODO: Support sell orders
-void portfolio::placeOrder(std::shared_ptr<order> order_)
+void portfolio::place_order(std::shared_ptr<order> order_)
 {
     m_all_orders.emplace(order_->m_uuid.hash(), order_);
     std::shared_ptr<event> event_ = std::make_shared<order_event>(order_);
-    std::dynamic_pointer_cast<order_event>(event_)->m_callback = [this](auto &&PH1) { handleOrderEventConcluded(PH1); };
-    std::dynamic_pointer_cast<order_event>(event_)->m_verify_portfolio_funds = [this](float total_cost_) {
-        return verifyCapital(total_cost_);
+    std::dynamic_pointer_cast<order_event>(event_)->m_callback = [this](auto &&PH1) {
+        handle_order_event_concluded(PH1);
     };
+    if (order_->m_order_signal == enums::order::signals::BUY) {
+        std::dynamic_pointer_cast<order_event>(event_)->m_verify_portfolio_funds = [this](const float total_cost_) {
+            return verify_capital(total_cost_);
+        };
+    } else if (order_->m_order_signal == enums::order::signals::SELL) {
+        std::dynamic_pointer_cast<order_event>(event_)->m_verify_portfolio_shares = [this](const int num_shares_,
+                                                                                           const std::string &security_) {
+            return verify_num_shares(num_shares_, security_);
+        };
+    }
 
     m_order_callbacks.emplace(order_->m_uuid.hash(), order_->m_strategy_callback);
-    m_exchange.addEvent(event_);
+    m_exchange.add_event(event_);
 }
 
-[[nodiscard]] bool portfolio::verifyCapital(const float total_cost_) const
+[[nodiscard]] bool portfolio::verify_capital(const float total_cost_) const
 {
     return m_liquid_cash >= total_cost_;
+}
+
+[[nodiscard]] bool portfolio::verify_num_shares(const int num_shares_, const std::string &security_) const
+{
+    if (m_holdings.find(security_) != m_holdings.end()) {
+        return m_holdings.at(security_).m_num_shares >= num_shares_;
+    }
+    return false;
 }
 
 void portfolio::handle_market_data(const std::unordered_map<std::string, lud::candlestick_data> &data_)
@@ -65,16 +116,18 @@ void portfolio::update_historic(const candlestick_data_map &data_)
 {
     float worth_ = 0;
     for (const auto &holding_ : m_holdings) {
-        worth_ += holding_.second.m_num_shares * data_.at(holding_.first).m_close;
+        worth_ += (float) holding_.second.m_num_shares * data_.at(holding_.first).m_close;
     }
     m_portfolio_value = worth_;
 }
 
+// TODO: Add comas to portfolio values
 void portfolio::summary() const
 {
     std::cout << "Portfolio Summary" << std::endl;
-    std::cout << "\tBalance: " << m_portfolio_value + m_liquid_cash << std::endl;
+    std::cout << "\tBalance: $" << m_portfolio_value + m_liquid_cash << std::endl;
     std::cout << "\tReturn: " << (m_portfolio_value + m_liquid_cash) / m_starting_capital * 100 << "%" << std::endl;
+    std::cout << "\tNumber Trades: " << m_num_trades << std::endl;
 }
 
 }

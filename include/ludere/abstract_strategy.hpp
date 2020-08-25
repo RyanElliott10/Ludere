@@ -33,15 +33,14 @@ public:
     };
 
     /// Main connection to the Portfolio to create and place a LimitOrder.
-    virtual void
-    place_limit_order(const std::string &security_, uint32_t num_shares_, order::order_signals signal_,
-                      order::position_types position_type_, order_lifetime lifetime_, float limit_price_)
+    virtual void place_limit_order(const std::string &security_, uint32_t num_shares_, enums::order::signals signal_,
+                                   enums::order::position_types position_type_, order_lifetime lifetime_, float limit_price_)
     {
         std::shared_ptr<order> order_ = std::make_shared<limit_order>(security_, num_shares_, signal_, position_type_,
                                                                       limit_price_, lifetime_, [this](auto &&PH1) {
                     handle_concluded_order(PH1);
                 });
-        m_portfolio->placeOrder(order_);
+        m_portfolio->place_order(order_);
     }
 
     /// Called right before trading on the exchange begins. Can be used as an alternative method to subscribe to an

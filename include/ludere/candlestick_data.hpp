@@ -41,8 +41,13 @@ class candlestick_data
 public:
     candlestick_data(std::string ticker_, time_t timestamp_, float open_, float high_, float low_, float close_,
                      uint32_t volume_)
-            : m_ticker(std::move(ticker_)), m_timestamp(timestamp_), m_open(open_), m_high(high_), m_low(low_), m_close(close_),
+            : m_ticker(std::move(ticker_)), m_timestamp(timestamp_), m_open(open_), m_high(high_), m_low(low_),
+              m_close(close_),
               m_volume(volume_)
+    {}
+
+    explicit candlestick_data(const std::string ticker_)
+            : m_ticker(ticker_)
     {}
 
     std::string m_ticker;
@@ -62,7 +67,8 @@ public:
 
 inline std::ostream &operator<<(std::ostream &strm_, const candlestick_data &candle_)
 {
-    return strm_ << candle_.m_ticker << " ts: " << candle_.m_timestamp << " open: " << candle_.m_open << " high: " << candle_.m_high
+    return strm_ << candle_.m_ticker << " ts: " << candle_.m_timestamp << " open: " << candle_.m_open << " high: "
+                 << candle_.m_high
                  << " low: " << candle_.m_low << " close: " << candle_.m_close << " vol: " << candle_.m_volume;
 }
 

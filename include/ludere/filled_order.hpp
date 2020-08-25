@@ -10,23 +10,17 @@
 #include <cstdint>
 #include <string>
 
+#include <ludere/order_enums.hpp>
 #include <ludere/uuid.hpp>
 
 namespace lud {
 
 struct filled_order
 {
-    enum class filled_order_statuses
-    {
-        SUCCESS,
-        INSUFFICIENT_FUNDS,
-        EXPIRED
-    };
-
-    filled_order(std::string security_, uint32_t numShares_, float sharePrice_, filled_order_statuses orderStatus_,
-                 time_t timestamp_, uuid uuid_)
-            : m_security(std::move(security_)), m_num_shares(numShares_), m_share_price(sharePrice_),
-              m_order_status(orderStatus_), m_timestamp(timestamp_), m_uuid(uuid_)
+    filled_order(std::string security_, uint32_t num_shares_, float share_price_, enums::order::signals order_signal_,
+                 enums::order::fill_statuses order_status_, time_t timestamp_, uuid uuid_)
+            : m_security(std::move(security_)), m_num_shares(num_shares_), m_share_price(share_price_),
+              m_order_signal(order_signal_), m_order_status(order_status_), m_timestamp(timestamp_), m_uuid(uuid_)
     {}
 
     [[nodiscard]] float total_order_cost() const
@@ -34,18 +28,21 @@ struct filled_order
         return m_num_shares * m_share_price;
     }
 
-    static std::unique_ptr<filled_order>
-    generate_failed_order_failure(filled_order_statuses order_status_, time_t timestamp_, uuid uuid_)
+    static std::unique_ptr<filled_order> generate_failed_order_failure(enums::order::signals order_signal_,
+                                                                       enums::order::fill_statuses order_status_,
+                                                                       time_t timestamp_, uuid uuid_)
     {
-        return std::move(std::make_unique<filled_order>(nullptr, 0, 0, order_status_, timestamp_, uuid_));
+        return std::move(
+                std::make_unique<filled_order>(nullptr, 0, 0, order_signal_, order_status_, timestamp_, uuid_));
     }
 
     std::string m_security;
     uint32_t m_num_shares;
     float m_share_price;
-    filled_order_statuses m_order_status;
+    enums::order::fill_statuses m_order_status;
     time_t m_timestamp;
     uuid m_uuid;
+    enums::order::signals m_order_signal;
 };
 
 }

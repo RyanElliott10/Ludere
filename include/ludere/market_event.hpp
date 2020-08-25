@@ -25,7 +25,7 @@ public:
     explicit market_event(market_event_type mtype_)
             : m_market_event_type(mtype_)
     {
-        m_type = event_type::MARKET_EVENT;
+        m_type = event_type::MARKET;
     }
 
 public:
