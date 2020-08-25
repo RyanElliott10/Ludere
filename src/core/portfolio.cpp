@@ -124,7 +124,7 @@ void portfolio::update_historic(const candlestick_data_map &data_)
     m_portfolio_value = worth_;
 }
 
-// TODO: Add comas to portfolio values
+// TODO: Add commas to portfolio values
 void portfolio::summary() const
 {
     std::cout << "Portfolio Summary" << std::endl;
