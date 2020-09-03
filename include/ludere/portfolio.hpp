@@ -42,7 +42,11 @@ public:
     [[nodiscard]] bool verify_num_shares(int num_shares_, const std::string &security_) const;
 
     /// Ensures the Portfolio is liquid enough for a given cost. Does not natively incorporate brokerage fees.
-    [[nodiscard]] bool soft_verify_capital(const float cost_) const { return m_liquid_cash >= cost_; }
+    [[nodiscard]] bool soft_verify_capital(const float cost_) const
+    { return m_liquid_cash >= cost_; }
+
+    [[nodiscard]] bool soft_verify_shares(const std::string &ticker_, const float num_shares_) const
+    { return m_holdings.find(ticker_) != m_holdings.end() && m_holdings.at(ticker_).m_num_shares >= num_shares_; }
 
     void handle_market_data(const std::unordered_map<std::string, lud::candlestick_data> &data_) override;
 
