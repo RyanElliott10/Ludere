@@ -31,8 +31,8 @@ public:
     m_brokerage_fees = brokerage_fees_;
   }
 
-  void handle_buy_order_event_concluded(std::shared_ptr<filled_order> &filled_order_);
-  void handle_sell_order_event_concluded(std::shared_ptr<filled_order> &filled_order_);
+  void handle_buy_order_event_concluded(const std::shared_ptr<order> &order_, std::shared_ptr<filled_order> &filled_order_);
+  void handle_sell_order_event_concluded(const std::shared_ptr<order> &order_, std::shared_ptr<filled_order> &filled_order_);
   void place_order(std::shared_ptr<order> order_);
 
   /// Verify a Portfolio has enough capital to perform a trade.
@@ -73,8 +73,8 @@ private:
   std::unordered_map<uuid_hash, std::shared_ptr<filled_order>> m_all_filled_orders;
 
 private:
-  void handle_order_event_concluded(std::shared_ptr<filled_order> &filled_order_);
-  void add_position(std::shared_ptr<filled_order> filled_order_);
+  void handle_order_event_concluded(const std::shared_ptr<order> &order_, std::shared_ptr<filled_order> &filled_order_);
+  void add_position(std::shared_ptr<order> order_, std::shared_ptr<filled_order> filled_order_);
 };
 
 }

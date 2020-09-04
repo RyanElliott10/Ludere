@@ -14,16 +14,18 @@ namespace lud {
 
 struct position
 {
-  explicit position(std::shared_ptr<filled_order> &filledOrder_)
-          : m_filled_order(filledOrder_)
+  position() = delete;
+  explicit position(std::shared_ptr<order> &order_, std::shared_ptr<filled_order> &filledOrder_)
+          : m_order(order_), m_filled_order(filledOrder_)
   {}
 
-  std::shared_ptr<order> m_order;
-  std::shared_ptr<filled_order> m_filled_order;
+  const std::shared_ptr<order> m_order;
+  const std::shared_ptr<filled_order> m_filled_order;
 };
 
 struct holding
 {
+  holding() = delete;
   explicit holding(std::string security_)
           : m_security(std::move(security_)), m_num_shares(0)
   {}

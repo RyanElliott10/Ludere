@@ -34,7 +34,7 @@ public:
   uint64_t m_id;
 
 private:
-  static inline uint64_t s_inc = 0;
+  static inline uint64_t s_inc {0};
 };
 
 }
