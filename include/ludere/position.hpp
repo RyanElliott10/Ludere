@@ -14,23 +14,23 @@ namespace lud {
 
 struct position
 {
-    explicit position(std::shared_ptr<filled_order> &filledOrder_)
-            : m_filled_order(filledOrder_)
-    {}
+  explicit position(std::shared_ptr<filled_order> &filledOrder_)
+          : m_filled_order(filledOrder_)
+  {}
 
-    std::shared_ptr<order> m_order;
-    std::shared_ptr<filled_order> m_filled_order;
+  std::shared_ptr<order> m_order;
+  std::shared_ptr<filled_order> m_filled_order;
 };
 
 struct holding
 {
-    explicit holding(std::string security_)
-            : m_security(std::move(security_)), m_num_shares(0)
-    {}
+  explicit holding(std::string security_)
+          : m_security(std::move(security_)), m_num_shares(0)
+  {}
 
-    std::vector<position> m_positions;
-    std::string m_security;
-    int m_num_shares;
+  std::vector<position> m_positions;
+  std::string m_security;
+  int m_num_shares;
 };
 
 }
@@ -40,10 +40,10 @@ namespace std {
 template<>
 struct hash<lud::holding>
 {
-    inline size_t operator()(const lud::holding &holding_) const
-    {
-        return hash<std::string>()(holding_.m_security);
-    }
+  inline size_t operator()(const lud::holding &holding_) const
+  {
+    return hash<std::string>()(holding_.m_security);
+  }
 };
 
 }

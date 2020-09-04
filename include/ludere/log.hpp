@@ -18,40 +18,40 @@ namespace lud {
 class log
 {
 public:
-    static inline void debug(const char *format, ...)
-    {
-        printf("%s%s", MAGENTA_ANSI_CODE, log::s_debug_msg);
-        va_list argptr;
-        va_start(argptr, format);
-        vfprintf(stdout, format, argptr);
-        va_end(argptr);
-        printf("\033[0m\n");
-    }
+  static inline void debug(const char *format, ...)
+  {
+    printf("%s%s", MAGENTA_ANSI_CODE, log::s_debug_msg);
+    va_list argptr;
+    va_start(argptr, format);
+    vfprintf(stdout, format, argptr);
+    va_end(argptr);
+    printf("\033[0m\n");
+  }
 
-    static inline void warn(const char *format, ...)
-    {
-        printf("%s%s", YELLOW_ANSI_CODE, log::s_warn_msg);
-        va_list argptr;
-        va_start(argptr, format);
-        vfprintf(stdout, format, argptr);
-        va_end(argptr);
-        printf("\033[0m\n");
-    }
+  static inline void warn(const char *format, ...)
+  {
+    printf("%s%s", YELLOW_ANSI_CODE, log::s_warn_msg);
+    va_list argptr;
+    va_start(argptr, format);
+    vfprintf(stdout, format, argptr);
+    va_end(argptr);
+    printf("\033[0m\n");
+  }
 
-    static inline void error(const char *format, ...)
-    {
-        printf("%s%s", RED_ANSI_CODE, log::s_error_msg);
-        va_list argptr;
-        va_start(argptr, format);
-        vfprintf(stdout, format, argptr);
-        va_end(argptr);
-        printf("\033[0m\n");
-    }
+  static inline void error(const char *format, ...)
+  {
+    printf("%s%s", RED_ANSI_CODE, log::s_error_msg);
+    va_list argptr;
+    va_start(argptr, format);
+    vfprintf(stdout, format, argptr);
+    va_end(argptr);
+    printf("\033[0m\n");
+  }
 
 private:
-    static constexpr const char *s_debug_msg = "LUD_DEBUG: ";
-    static constexpr const char *s_warn_msg = "LUD_WARN: ";
-    static constexpr const char *s_error_msg = "LUD_ERROR: ";
+  static constexpr const char *s_debug_msg = "LUD_DEBUG: ";
+  static constexpr const char *s_warn_msg = "LUD_WARN: ";
+  static constexpr const char *s_error_msg = "LUD_ERROR: ";
 };
 
 #ifndef NDEBUG

@@ -10,31 +10,31 @@ namespace lud::enums::order {
 
 enum class position_types
 {
-    LONG,
-    SHORT
+  LONG,
+  SHORT
 };
 enum class types
 {
-    LIMIT,
-    MARKET
+  LIMIT,
+  MARKET
 };
 enum class signals
 {
-    BUY,
-    SELL
+  BUY,
+  SELL
 };
 
 enum class lifetime_durations
 {
-    HOUR = 3600,
-    DAY = 3600 * 24,
-    WEEK = 3600 * 24 * 7
+  HOUR = 3600,
+  DAY = 3600 * 24,
+  WEEK = 3600 * 24 * 7
 };
 enum class fill_statuses
 {
-    SUCCESS,
-    INSUFFICIENT_FUNDS,
-    EXPIRED
+  SUCCESS,
+  INSUFFICIENT_FUNDS,
+  EXPIRED
 };
 
 }

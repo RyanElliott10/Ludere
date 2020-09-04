@@ -13,33 +13,35 @@
 
 namespace lud {
 
+struct candlestick_data_aggregate;
+
 /// Defines what to implement to subscribe to a data stream.
 struct data_event_subscribable
 {
-    virtual ~data_event_subscribable() = default;
+  virtual ~data_event_subscribable() = default;
 
-    /// Called when the exchange has received update data. Should be the main entry point for handling updated market
-    /// data.
-    virtual void handle_market_data(const std::unordered_map<std::string, lud::candlestick_data> &data_) = 0;
+  /// Called when the exchange has received update data. Should be the main entry point for handling updated market
+  /// data.
+  virtual void handle_market_data(const lud::candlestick_data_aggregate &data_) = 0;
 
-    /// Set of securities a Strategy is interested in.
-    std::unordered_set<std::string> m_subscribed_securities;
+  /// Set of securities a Strategy is interested in.
+  std::unordered_set<std::string> m_subscribed_securities;
 };
 
 /// Utilized to subscribe a Strategy to a data stream.
 struct data_event_subscription
 {
-    virtual ~data_event_subscription() = default;
+  virtual ~data_event_subscription() = default;
 
-    data_event_subscription(std::shared_ptr<data_event_subscribable> ref_, std::unordered_set<std::string> securities_)
-            : m_ref(std::move(ref_)), m_securities(std::move(securities_))
-    {}
+  data_event_subscription(std::shared_ptr<data_event_subscribable> ref_, std::unordered_set<std::string> securities_)
+          : m_ref(std::move(ref_)), m_securities(std::move(securities_))
+  {}
 
-    /// A reference to the Strategy being subscribed.
-    std::shared_ptr<data_event_subscribable> m_ref;
+  /// A reference to the Strategy being subscribed.
+  std::shared_ptr<data_event_subscribable> m_ref;
 
-    /// A list of Securities. At this point, strictly strings
-    std::unordered_set<std::string> m_securities;
+  /// A list of Securities. At this point, strictly strings
+  std::unordered_set<std::string> m_securities;
 };
 
 }

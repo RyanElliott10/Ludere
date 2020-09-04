@@ -12,18 +12,29 @@
 
 namespace lud {
 
-/**
- * TODO: Convert this into a class or struct to support metadata (like timestamp, etc.) in a far more elegant fashion
- *      than querying the map for "timestamp"
- */
-using candlestick_data_map = std::unordered_map<std::string, candlestick_data>;
+struct candlestick_data_aggregate
+{
+  std::unordered_map<std::string, candlestick_data> m_map;
+  time_t m_timestamp;
+
+  template<typename T>
+  inline candlestick_data at(T key) const
+  { return m_map.at(key); }
+
+  inline bool empty() const
+  { return m_map.empty(); }
+
+  template<typename T, typename V>
+  inline void emplace(T key, V value)
+  { m_map.emplace(key, value); }
+};
 
 struct datastreamable
 {
-    virtual ~datastreamable() = default;
+  virtual ~datastreamable() = default;
 
-    /// Called by an exchange to request the next data points.
-    virtual candlestick_data_map poll_next_stream() = 0;
+  /// Called by an exchange to request the next data points.
+  virtual candlestick_data_aggregate poll_next_stream() = 0;
 };
 
 }

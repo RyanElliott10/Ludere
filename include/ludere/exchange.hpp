@@ -44,19 +44,19 @@ private:
     std::vector<const std::shared_ptr<market_event_subscribable>> m_market_event_subscribers;
 
 private:
-    void stream_data(const candlestick_data_map &data_);
-    void handle_order_event(const std::shared_ptr<event> &event_, const candlestick_data_map &candles_);
+    void stream_data(const candlestick_data_aggregate &data_);
+    void handle_order_event(const std::shared_ptr<event> &event_, const candlestick_data_aggregate &candles_);
     void handle_market_event(const std::shared_ptr<event> &event_);
-    void fill_orders(const candlestick_data_map &candles_);
+    void fill_orders(const candlestick_data_aggregate &candles_);
 
     // Order handling
-    void handle_limit_order(const std::shared_ptr<limit_order> &order_, const candlestick_data_map &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
-    void handle_buy_limit_order(const std::shared_ptr<limit_order> &order_, const candlestick_data_map &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
-    void handle_sell_limit_order(const std::shared_ptr<limit_order> &order_, const candlestick_data_map &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
+    void handle_limit_order(const std::shared_ptr<limit_order> &order_, const candlestick_data_aggregate &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
+    void handle_buy_limit_order(const std::shared_ptr<limit_order> &order_, const candlestick_data_aggregate &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
+    void handle_sell_limit_order(const std::shared_ptr<limit_order> &order_, const candlestick_data_aggregate &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
 
-    void handle_market_order(const std::shared_ptr<market_order> &order_, const candlestick_data_map &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
-    void handle_buy_market_order(const std::shared_ptr<market_order> &order_, const candlestick_data_map &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
-    void handle_sell_market_order(const std::shared_ptr<market_order> &order_, const candlestick_data_map &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
+    void handle_market_order(const std::shared_ptr<market_order> &order_, const candlestick_data_aggregate &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
+    void handle_buy_market_order(const std::shared_ptr<market_order> &order_, const candlestick_data_aggregate &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
+    void handle_sell_market_order(const std::shared_ptr<market_order> &order_, const candlestick_data_aggregate &candles_, std::list<std::shared_ptr<order_event>>::iterator &it_);
 };
 
 }

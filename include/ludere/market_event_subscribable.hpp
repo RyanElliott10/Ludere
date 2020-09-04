@@ -12,9 +12,9 @@ namespace lud {
 
 struct market_event_subscribable
 {
-    virtual ~market_event_subscribable() = default;
+  virtual ~market_event_subscribable() = default;
 
-    virtual void notify_of_market_event(market_event &market_event_) = 0;
+  virtual void notify_of_market_event(market_event &market_event_) = 0;
 };
 
 }
