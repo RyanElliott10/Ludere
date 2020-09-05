@@ -14,22 +14,22 @@ namespace lud {
 
 enum class market_event_type : uint8_t
 {
-  MARKET_OPEN = 0,
-  MARKET_CLOSE,
-  MARKET_HALT
+    MARKET_OPEN = 0,
+    MARKET_CLOSE,
+    MARKET_HALT
 };
 
 class market_event : public event
 {
 public:
-  explicit market_event(market_event_type mtype_)
-          : m_market_event_type(mtype_)
-  {
-    m_type = event_type::MARKET;
-  }
+    explicit market_event(market_event_type mtype_)
+            : m_market_event_type(mtype_)
+    {
+        m_type = event_type::MARKET;
+    }
 
 public:
-  market_event_type m_market_event_type;
+    market_event_type m_market_event_type;
 };
 
 }
