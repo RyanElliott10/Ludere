@@ -18,14 +18,25 @@ struct candlestick_data_aggregate
   time_t m_timestamp;
 
   template<typename T>
-  inline candlestick_data at(T key) const
+  __attribute__((always_inline))
+  candlestick_data at(T key) const
   { return m_map.at(key); }
 
-  inline bool empty() const
+  template<typename T>
+  __attribute__((always_inline))
+  auto find(T key) const
+  { return m_map.find(key); }
+
+  __attribute__((always_inline))
+  auto end() const { return m_map.end(); }
+
+  [[nodiscard]] __attribute__((always_inline))
+  bool empty() const
   { return m_map.empty(); }
 
   template<typename T, typename V>
-  inline void emplace(T key, V value)
+  __attribute__((always_inline))
+  void emplace(T key, V value)
   { m_map.emplace(key, value); }
 };
 

@@ -24,6 +24,7 @@ exchange::exchange(std::shared_ptr<datastreamable> datastream_, const bool inver
   }
 }
 
+__attribute__((noinline))
 void exchange::trade()
 {
   m_is_trading = true;
