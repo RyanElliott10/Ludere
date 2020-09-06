@@ -20,12 +20,14 @@ public:
 
     ~uuid() = default;
 
-    [[nodiscard]] uuid_hash hash() const
+    [[nodiscard]] __attribute__((always_inline))
+    uuid_hash hash() const
     {
         return m_id;
     }
 
-    inline bool operator==(const uuid &other_) const
+    __attribute__((always_inline))
+    bool operator==(const uuid &other_) const
     {
         return m_id == other_.m_id;
     }
@@ -34,7 +36,7 @@ public:
     uint64_t m_id;
 
 private:
-    static inline uint64_t s_inc{0};
+    static inline uint64_t s_inc {0};
 };
 
 }

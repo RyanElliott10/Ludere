@@ -42,7 +42,7 @@ public:
     candlestick_data(std::string ticker_, time_t timestamp_, float open_, float high_, float low_, float close_,
                      uint32_t volume_);
 
-    explicit candlestick_data(const std::string ticker_, time_t timestamp_);
+    explicit candlestick_data(std::string ticker_, time_t timestamp_);
 
     std::string m_ticker;
     float m_open;

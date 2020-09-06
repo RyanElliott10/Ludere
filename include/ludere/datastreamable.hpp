@@ -27,7 +27,7 @@ struct candlestick_data_aggregate
     auto find(T key) const
     { return m_map.find(key); }
 
-    __attribute__((always_inline))
+    [[nodiscard]] __attribute__((always_inline))
     auto end() const
     { return m_map.end(); }
 

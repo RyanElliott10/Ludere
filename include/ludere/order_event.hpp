@@ -14,16 +14,14 @@
 
 namespace lud {
 
-class order_event : public event
+struct order_event : public event
 {
-public:
     explicit order_event(std::shared_ptr<order> order_)
             : m_order(std::move(order_))
     {
         m_type = event_type::ORDER;
     }
 
-public:
     std::shared_ptr<order> m_order;
     boost::function<void(std::shared_ptr<filled_order>)> m_callback;
     boost::function<bool(const std::shared_ptr<order> &, const float)> m_verify_portfolio_funds;

@@ -18,7 +18,7 @@ namespace lud {
 class log
 {
 public:
-    static inline void debug(const char *format, ...)
+    static void debug(const char *format, ...)
     {
         printf("%s%s", MAGENTA_ANSI_CODE, log::s_debug_msg);
         va_list argptr;
@@ -28,7 +28,7 @@ public:
         printf("\033[0m\n");
     }
 
-    static inline void warn(const char *format, ...)
+    static void warn(const char *format, ...)
     {
         printf("%s%s", YELLOW_ANSI_CODE, log::s_warn_msg);
         va_list argptr;
@@ -38,7 +38,7 @@ public:
         printf("\033[0m\n");
     }
 
-    static inline void error(const char *format, ...)
+    static void error(const char *format, ...)
     {
         printf("%s%s", RED_ANSI_CODE, log::s_error_msg);
         va_list argptr;

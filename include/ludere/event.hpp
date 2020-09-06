@@ -16,9 +16,8 @@ enum class event_type : uint8_t
     MARKET, // A market-wide event. Market open/close, trading halt, etc.
 };
 
-class event
+struct event
 {
-public:
     virtual ~event() = default;
     event_type m_type;
 };

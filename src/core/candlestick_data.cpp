@@ -6,16 +6,15 @@
 
 namespace lud {
 
-candlestick_data::candlestick_data(std::string ticker_, time_t timestamp_, float open_, float high_, float low_,
-                                   float close_,
-                                   uint32_t volume_)
+candlestick_data::candlestick_data(const std::string ticker_, const time_t timestamp_, float open_, float high_,
+                                   float low_, float close_, uint32_t volume_)
         : m_ticker(std::move(ticker_)), m_timestamp(timestamp_), m_open(open_), m_high(high_), m_low(low_),
           m_close(close_),
           m_volume(volume_)
 {}
 
-candlestick_data::candlestick_data(const std::string ticker_, time_t timestamp_)
-        : m_ticker(ticker_), m_timestamp(timestamp_)
+candlestick_data::candlestick_data(const std::string ticker_, const time_t timestamp_)
+        : m_ticker(std::move(ticker_)), m_timestamp(timestamp_)
 {}
 
 bool candlestick_data::operator==(const candlestick_data &candle_) const
@@ -37,10 +36,13 @@ namespace std {
 template<>
 struct hash<lud::candlestick_data>
 {
-    inline size_t operator()(const lud::candlestick_data &candle_) const
+
+    __attribute__((always_inline))
+    size_t operator()(const lud::candlestick_data &candle_) const
     {
         return hash<int>()(candle_.m_uuid.hash());
     }
+
 };
 
 }

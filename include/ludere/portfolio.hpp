@@ -26,7 +26,8 @@ class portfolio : public data_event_subscribable
 public:
     portfolio(exchange &exchange_, float cash_);
 
-    inline void set_brokerage_fees(brokerage_fees brokerage_fees_)
+    __attribute__((always_inline))
+    void set_brokerage_fees(brokerage_fees brokerage_fees_)
     {
         m_brokerage_fees = brokerage_fees_;
     }
@@ -55,7 +56,8 @@ public:
     /// Update the Portfolio's balance against the current positions and current market data
     void update_historic(const candlestick_data_aggregate &data_);
 
-    [[nodiscard]] inline float net_value() const
+    [[nodiscard]] __attribute__((always_inline))
+    float net_value() const
     { return m_portfolio_value + m_liquid_cash; }
 
     void summary() const;

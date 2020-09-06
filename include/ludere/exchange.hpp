@@ -12,6 +12,8 @@
 #include <ludere/core.hpp>
 #include <ludere/data_event_subscribable.hpp>
 #include <ludere/datastreamable.hpp>
+#include <ludere/limit_order.hpp>
+#include <ludere/market_order.hpp>
 #include <ludere/market_event_subscribable.hpp>
 #include <ludere/order_event.hpp>
 
