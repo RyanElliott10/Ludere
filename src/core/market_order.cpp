@@ -28,4 +28,4 @@ inline std::ostream &operator<<(std::ostream &strm_, const market_order &order_)
     return strm_ << order_.m_security << " " << order_.m_num_shares << " @ $" << order_.m_market_price;
 }
 
-};
+}

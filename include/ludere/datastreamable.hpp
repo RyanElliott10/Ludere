@@ -35,9 +35,9 @@ struct candlestick_data_aggregate
     bool empty() const
     { return m_map.empty(); }
 
-    template<typename T, typename V>
+    template<typename K, typename V>
     __attribute__((always_inline))
-    void emplace(T key, V value)
+    void emplace(K key, V value)
     { m_map.emplace(key, value); }
 };
 

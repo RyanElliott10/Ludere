@@ -7,7 +7,8 @@
 namespace lud {
 
 order::order(std::string security_, uint32_t num_shares_, enums::order::signals order_signal_,
-             enums::order::types order_type_, enums::order::position_types position_type_, order_lifetime order_lifetime_,
+             enums::order::types order_type_, enums::order::position_types position_type_,
+             order_lifetime order_lifetime_,
              strategy_callback_def callback_)
         : m_security(std::move(security_)), m_num_shares(num_shares_), m_order_signal(order_signal_),
           m_order_type(order_type_), m_position_type(position_type_), m_order_lifetime(order_lifetime_),

@@ -16,6 +16,11 @@ portfolio::portfolio(exchange &exchange_, const float cash_)
 void portfolio::handle_order_event_concluded(const std::shared_ptr<order> &order_,
                                              std::shared_ptr<filled_order> &filled_order_)
 {
+    if (filled_order_->m_order_status == enums::order::fill_statuses::SUCCESS) {
+        add_position(order_, filled_order_);
+        m_liquid_cash -= m_brokerage_fees.fees_for_order(filled_order_);
+        m_num_trades++;
+    }
     switch (filled_order_->m_order_signal) {
     case enums::order::signals::BUY:
         handle_buy_order_event_concluded(order_, filled_order_);
@@ -35,10 +40,7 @@ void portfolio::handle_buy_order_event_concluded(const std::shared_ptr<order> &o
     if (filled_order_->m_order_status == enums::order::fill_statuses::SUCCESS) {
         LUD_DEBUG("Buy order executed: %d @ $%.2f for %s", filled_order_->m_num_shares,
                   filled_order_->total_order_cost(), filled_order_->m_security.c_str());
-        add_position(order_, filled_order_);
         m_liquid_cash -= filled_order_->total_order_cost();
-        m_liquid_cash -= m_brokerage_fees.fees_for_order(filled_order_);
-        m_num_trades++;
     }
 }
 
@@ -48,10 +50,7 @@ void portfolio::handle_sell_order_event_concluded(const std::shared_ptr<order> &
     if (filled_order_->m_order_status == enums::order::fill_statuses::SUCCESS) {
         LUD_DEBUG("Sell order executed: %d @ $%.2f for %s", filled_order_->m_num_shares, filled_order_->m_share_price,
                   filled_order_->m_security.c_str());
-        add_position(order_, filled_order_);
         m_liquid_cash += filled_order_->total_order_cost();
-        m_liquid_cash -= m_brokerage_fees.fees_for_order(filled_order_);
-        m_num_trades++;
     }
 }
 

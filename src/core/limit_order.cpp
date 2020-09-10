@@ -20,8 +20,8 @@ float limit_order::max_order_cost()
 }
 
 std::unique_ptr<filled_order> limit_order::generate_filled_order_failure(const std::shared_ptr<limit_order> &order_,
-                                                                   const enums::order::fill_statuses order_status_,
-                                                                   time_t timestamp_)
+                                                                         const enums::order::fill_statuses order_status_,
+                                                                         time_t timestamp_)
 {
     return std::move(std::make_unique<filled_order>(order_->m_security, order_->m_num_shares, order_->m_limit_price,
                                                     order_->m_order_signal, order_status_, timestamp_,

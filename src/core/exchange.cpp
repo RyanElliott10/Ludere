@@ -114,9 +114,9 @@ exchange::handle_limit_order(const std::shared_ptr<limit_order> &order_, const c
 
 // TODO: Place on the top of the order queue. Will require using a PriorityQueue rather than a list, or can add
 //      additional logic.
-void
-exchange::handle_market_order(const std::shared_ptr<market_order> &order_, const candlestick_data_aggregate &candles_,
-                              std::list<std::shared_ptr<order_event>>::iterator &it_)
+void exchange::handle_market_order(const std::shared_ptr<market_order> &order_,
+                                   const candlestick_data_aggregate &candles_,
+                                   std::list<std::shared_ptr<order_event>>::iterator &it_)
 {
     switch (order_->m_order_signal) {
     case enums::order::signals::BUY:
@@ -128,9 +128,10 @@ exchange::handle_market_order(const std::shared_ptr<market_order> &order_, const
     }
 }
 
-void
-exchange::handle_buy_limit_order(const std::shared_ptr<limit_order> &order_, const candlestick_data_aggregate &candles_,
-                                 std::list<std::shared_ptr<order_event>, std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
+void exchange::handle_buy_limit_order(const std::shared_ptr<limit_order> &order_,
+                                      const candlestick_data_aggregate &candles_,
+                                      std::list<std::shared_ptr<order_event>,
+                                              std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
 {
     const float security_price_ = candles_.at(order_->m_security).m_close;
     if (order_->m_limit_price >= security_price_ &&
@@ -155,7 +156,8 @@ exchange::handle_buy_limit_order(const std::shared_ptr<limit_order> &order_, con
 
 void exchange::handle_sell_limit_order(const std::shared_ptr<limit_order> &order_,
                                        const candlestick_data_aggregate &candles_,
-                                       std::list<std::shared_ptr<order_event>, std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
+                                       std::list<std::shared_ptr<order_event>,
+                                               std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
 {
     const float security_price_ = candles_.at(order_->m_security).m_close;
     if (security_price_ >= order_->m_limit_price &&
@@ -178,10 +180,10 @@ void exchange::handle_sell_limit_order(const std::shared_ptr<limit_order> &order
     } else { it_++; }
 }
 
-void
-exchange::handle_buy_market_order(const std::shared_ptr<market_order> &order_,
-                                  const candlestick_data_aggregate &candles_,
-                                  std::list<std::shared_ptr<order_event>, std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
+void exchange::handle_buy_market_order(const std::shared_ptr<market_order> &order_,
+                                       const candlestick_data_aggregate &candles_,
+                                       std::list<std::shared_ptr<order_event>,
+                                               std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
 {
     const float security_price_ = candles_.at(order_->m_security).m_close;
     if ((*it_)->m_verify_portfolio_funds(order_, security_price_)) {
@@ -203,10 +205,10 @@ exchange::handle_buy_market_order(const std::shared_ptr<market_order> &order_,
     }
 }
 
-void
-exchange::handle_sell_market_order(const std::shared_ptr<market_order> &order_,
-                                   const candlestick_data_aggregate &candles_,
-                                   std::list<std::shared_ptr<order_event>, std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
+void exchange::handle_sell_market_order(const std::shared_ptr<market_order> &order_,
+                                        const candlestick_data_aggregate &candles_,
+                                        std::list<std::shared_ptr<order_event>,
+                                                std::allocator<std::shared_ptr<order_event>>>::iterator &it_)
 {
 
 }
